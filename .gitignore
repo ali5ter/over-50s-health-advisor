@@ -1,0 +1,10 @@
+# User-specific health data (never commit)
+context/user/
+
+# OS and editor noise
+.DS_Store
+*.swp
+*.swo
+
+# Logs
+*.log
