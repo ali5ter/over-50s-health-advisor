@@ -2,7 +2,7 @@
 
 ## Goal
 
-A Claude Code Agent that can advise the User (that being Alister Lewis-Bowen), on aspects of fitness, training, nutritian, metabolic indicators, mental, and physical health, based on the latest medical eveidence based research.
+A Claude Code Agent that can advise the User, on aspects of fitness, training, nutritian, metabolic indicators, mental, and physical health, based on the latest medical eveidence based research.
 
 ## Use cases
 
