@@ -4,7 +4,7 @@ show_help() {
   cat <<'HELP'
 Usage: ./install.sh [--User] [--force]
 
-Installs the Over-50s Health Advisor agent definition.
+Installs the Over-50s Health Advisor Claude Code Agent.
 
 Options:
   --User     Install to ~/.claude/agents (User scope)

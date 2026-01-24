@@ -11,6 +11,7 @@ Project scope (default):
 ```
 
 Expected:
+
 - Creates `.claude/agents/over-50s-health-advisor.md` in the repo.
 
 User scope:
@@ -20,6 +21,7 @@ User scope:
 ```
 
 Expected:
+
 - Creates `~/.claude/agents/over-50s-health-advisor.md`.
 
 Overwrite behavior:
@@ -36,21 +38,25 @@ cp -R context/templates/* context/user/
 ```
 
 Expected:
+
 - All context files exist in `context/user/`.
 
 ## Git ignore
 
 Expected:
+
 - `context/user/` remains untracked by Git (no entries in `git status`).
 
 ## Agent definition sanity
 
 Expected:
+
 - All context paths in `agent/over-50s-health-advisor.md` reference `context/user/`.
 - All references to the User are capitalized as "User" in documentation and agent definitions.
 
 ## Documentation coherence
 
 Expected:
+
 - README repo structure matches actual layout.
 - PRD context structure matches README and agent definition.
