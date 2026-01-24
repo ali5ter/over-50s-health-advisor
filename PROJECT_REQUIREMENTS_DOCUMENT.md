@@ -150,6 +150,7 @@ Use subagents for specialized tasks. Example breakdown:
 ## Context Files Structure
 
 Templates (committed):
+
 - context/templates/INITIAL_USER_INFORMATION.md: static baseline profile
 - context/templates/CLIENT_HEALTH_CONTEXT.md: evolving health data and trends
 - context/templates/CLIENT_PREFERENCES.md: goals, constraints, and preferences
@@ -157,6 +158,7 @@ Templates (committed):
 - context/templates/SOURCES.md: curated source list and evidence notes
 
 User data (never committed, gitignored):
+
 - context/user/INITIAL_USER_INFORMATION.md
 - context/user/CLIENT_HEALTH_CONTEXT.md
 - context/user/CLIENT_PREFERENCES.md

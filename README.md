@@ -51,15 +51,16 @@ Overwrite without prompting:
 
 ## Usage
 
-1. Copy templates into `context/User/`:
+1. Copy templates into `context/user/`:
 
    ```bash
-   cp -R context/templates/* context/User/
+   cp -R context/templates/* context/user/
    ```
 
-2. Fill in `context/User/INITIAL_USER_INFORMATION.md` and `context/User/CLIENT_PREFERENCES.md`.
-3. Keep `context/User/CLIENT_HEALTH_CONTEXT.md` and `context/User/SESSION_NOTES.md` current.
-3. Use the agent in Claude Code, and update context files after new information is shared.
+2. Fill in `context/user/INITIAL_USER_INFORMATION.md` and `context/user/CLIENT_PREFERENCES.md`.
+3. Keep `context/user/CLIENT_HEALTH_CONTEXT.md` and `context/user/SESSION_NOTES.md` current as new information is shared.
+4. Maintain `context/user/SOURCES.md` as a curated reference list (remove low-quality sources, add high-quality evidence).
+5. Use the agent in Claude Code and update context files after each session; keep the "Last updated" dates accurate.
 
 ## Safety and medical boundaries
 

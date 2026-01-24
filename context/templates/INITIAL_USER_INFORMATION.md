@@ -3,6 +3,7 @@
 Last updated: 2026-01-23
 
 ## Profile
+
 - Name:
 - Age:
 - Sex:
@@ -11,6 +12,7 @@ Last updated: 2026-01-23
 - Location:
 
 ## Medical background
+
 - Diagnoses/conditions:
 - Medications (name, dose, schedule):
 - Allergies:
@@ -18,6 +20,7 @@ Last updated: 2026-01-23
 - Injuries/limitations:
 
 ## Vital signs and measurements
+
 - Blood pressure:
 - Resting heart rate:
 - A1C:
@@ -25,6 +28,7 @@ Last updated: 2026-01-23
 - Other labs:
 
 ## Lifestyle
+
 - Activity level:
 - Sleep patterns:
 - Stressors:
@@ -32,10 +36,12 @@ Last updated: 2026-01-23
 - Alcohol/tobacco:
 
 ## Goals
+
 - Primary goals:
 - Secondary goals:
 - Timeline:
 
 ## Notes
+
 - Clinician guidance or restrictions:
 - Safety considerations:
