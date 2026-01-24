@@ -8,3 +8,6 @@ context/user/
 
 # Logs
 *.log
+
+# Local claude files
+.claude
