@@ -1,178 +1,202 @@
-# Implementation Plan: Over-50s Health Advisor
+# Over-50s Health Advisor - Project Status
 
-## Analysis
+**Last updated**: 2026-01-28
 
-After reviewing the PROJECT_REQUIREMENTS_DOCUMENT.md, this is a well-defined project for creating a specialized health advisor for adults 50+. The requirements are clear about:
+## Project Overview
 
-- Domain specialization (fitness, nutrition, metabolic health, longevity)
-- Age-appropriate guidance with safety boundaries
-- Evidence-based approach with mandatory citations
-- Local context management (privacy-preserving)
-- Integration with Claude Code as an agent
+A Claude Code Agent that provides evidence-based, age-appropriate health guidance for adults 50+. Specializes in fitness, nutrition, metabolic health, mental health, sleep, and longevity with mandatory citations and safety boundaries.
 
-## Recommended Implementation: Agent-Based Architecture
+## Current Architecture (v2.0)
 
-**Primary implementation: Custom Claude Code Agent**
-
-This should be implemented as a **single specialized agent** rather than a skill or workflow because:
-
-1. **State Management**: Requires maintaining evolving user context across sessions
-2. **Complex Workflows**: Multi-step processes (gather context → research → advise → update context)
-3. **Specialized Tools**: Needs WebSearch, WebFetch, Read, Write for evidence gathering
-4. **Domain Expertise**: Requires deep specialization in 50+ health guidance
-5. **Invocable Pattern**: Should be callable when health/fitness topics arise
-
-**Not a skill** because:
-- Too complex for single-command execution
-- Requires multi-turn conversations and context building
-- Not a simple transformation or command
-
-**Not a workflow** because:
-- Requires autonomous decision-making and research
-- Needs to adapt responses based on user context
-- More interactive than procedural
-
-## Architecture Overview
-
+**User-level scope** (implemented 2026-01-28):
 ```
-┌─────────────────────────────────────┐
-│  over-50s-health-advisor.md         │  ← Agent definition (YAML + instructions)
-│  (in .claude/agents/)                │
-└─────────────────────────────────────┘
-                 │
-                 ├─ Tools: Read, Write, WebSearch, WebFetch
-                 │
-                 ├─ Reads from: context/templates/*.md (reference)
-                 │
-                 └─ Maintains: context/user/*.md (gitignored)
-                              ├─ INITIAL_USER_INFORMATION.md
-                              ├─ CLIENT_HEALTH_CONTEXT.md
-                              ├─ CLIENT_PREFERENCES.md
-                              ├─ SESSION_NOTES.md
-                              └─ SOURCES.md
+~/.claude/
+├── agents/over-50s-health-advisor.md     # Agent definition
+└── over-50s-health-advisor/
+    └── context/                           # User's personal health context
+        ├── INITIAL_USER_INFORMATION.md
+        ├── CLIENT_HEALTH_CONTEXT.md
+        ├── CLIENT_PREFERENCES.md
+        ├── SESSION_NOTES.md
+        └── SOURCES.md
 ```
 
-## Implementation Components
+**Key features**:
+- Works from any directory
+- Context files preserved on reinstall
+- Privacy-preserving local storage
+- Evidence-based with mandatory citations
+- Clear safety boundaries and medical disclaimers
 
-### 1. Agent Definition File
-**File**: `agent/over-50s-health-advisor.md`
+## Repository Structure
 
-Structure:
-- YAML frontmatter (name, description with examples, model, color, tools)
-- Markdown body with:
-  - Role and purpose
-  - Context file locations
-  - Safety boundaries and medical disclaimers
-  - Evidence and citation policy
-  - Workflow steps
-  - Output format guidelines
-  - Success indicators
+```
+agent/over-50s-health-advisor.md        # Agent definition (source)
+context/
+  templates/                             # Context file templates
+    INITIAL_USER_INFORMATION.md
+    CLIENT_HEALTH_CONTEXT.md
+    CLIENT_PREFERENCES.md
+    SESSION_NOTES.md
+    SOURCES.md
+  README.md                              # Context documentation
+install.sh                               # Installation script
+README.md                                # User-facing documentation
+TESTING.md                               # Test procedures
+AGENTS.md                                # Development notes
+LICENSE                                  # MIT License
+```
 
-### 2. Context Management System
-**Templates** (committed): `context/templates/*.md`
-- Serve as examples and structure reference
-- Read-only for the agent
+## Implementation Status
 
-**User Data** (gitignored): `context/user/*.md`
-- Agent reads/writes here exclusively
-- Contains actual user health information
-- Never committed to version control
+### ✅ Completed (v2.0 - 2026-01-28)
 
-### 3. Installation Infrastructure
-**File**: `install.sh`
+1. **Agent Definition**
+   - YAML frontmatter with invocation examples
+   - Absolute context paths: `~/.claude/over-50s-health-advisor/context/`
+   - Evidence source guidelines (reputable .org and .com sites)
+   - Safety boundaries and emergency referral protocols
+   - Context management workflow
 
-Features:
-- Copy agent definition to `.claude/agents/` (project scope by default)
-- Optional `--user` flag for `~/.claude/agents/` (user scope)
-- Create `context/user/` directory structure
-- Copy templates to `context/user/` if they don't exist
-- Confirmation prompts or `--force` flag for overwrites
+2. **Installation Infrastructure**
+   - User-scope installation by default
+   - `--project` flag for development mode
+   - Automatic context directory creation
+   - Template copying with preservation logic
+   - Clear installation feedback
 
-### 4. Documentation
-- `README.md`: Usage guide, installation instructions, safety disclaimer
-- `LICENSE`: Open source license for public distribution
-- `context/README.md`: Explanation of context file structure
+3. **Context Management System**
+   - 5 template files with clear structure
+   - Examples and guidance in each template
+   - Privacy-preserving architecture
+   - User-editable with any text editor
 
-## Key Design Decisions
+4. **Documentation**
+   - README.md with installation and usage
+   - context/README.md with detailed context guidance
+   - TESTING.md with comprehensive test procedures
+   - AGENTS.md with development notes
+   - MIT License for open source distribution
+
+5. **Version Control**
+   - .gitignore excludes all user data
+   - Templates committed, actual context never tracked
+   - Clean separation of distribution vs personal data
+
+### 🔄 In Progress
+
+None currently. Core implementation is complete.
+
+### 📋 Next Steps (Testing & Validation)
+
+1. **Installation Testing**
+   - [ ] Clean user-scope install
+   - [ ] Context files created correctly
+   - [ ] Reinstall preserves user data
+   - [ ] Project-scope mode still works
+
+2. **Cross-Directory Testing**
+   - [ ] Invoke agent from project directory
+   - [ ] Invoke agent from home directory
+   - [ ] Invoke agent from /tmp directory
+   - [ ] Verify context files accessible from all locations
+
+3. **Agent Behavior Testing**
+   - [ ] Agent loads and activates correctly
+   - [ ] Can read all context files
+   - [ ] Can write to context files
+   - [ ] Citations and sources formatted correctly
+   - [ ] Safety disclaimers present in responses
+
+4. **Real-World Usage**
+   - [ ] Fill in actual user context files
+   - [ ] Test with sample health queries
+   - [ ] Verify evidence sources are credible
+   - [ ] Test context budget management
+
+5. **Optional Enhancements**
+   - [ ] Create migration guide for existing users
+   - [ ] Create uninstall script
+   - [ ] Add version tagging (v2.0.0)
+   - [ ] Consider archive strategy for session notes
+
+## Design Decisions
 
 ### Context Budget Management
 - Target: 1,500-2,500 words across all context files
 - Agent monitors and reports when approaching limits
-- Archival strategy for older session notes
-- Always request user approval before pruning
+- User approval required before pruning
 
-### Evidence & Safety Policy
-- Every response with recommendations includes citations
-- Mandatory "Sources:" section with markdown links
-- Safety disclaimers in every advisory response
-- Clear boundaries: education not diagnosis
+### Evidence Standards
+- Credible sources required for all recommendations
+- Accept: .gov, .edu, reputable .org, credible medical .com sites
+- Evaluate each source for authority and relevance
+- Mandatory "Sources:" section with links
+
+### Safety Boundaries
+- Education only, never diagnosis
+- Emergency symptom referral (chest pain, stroke signs, etc.)
+- Medication questions referred to clinician/pharmacist
+- Mental health crisis referral to professional support
 
 ### Privacy Architecture
-- All personal health data in `context/user/` (gitignored)
-- No cloud storage of user data
-- Templates provide structure without exposing data
-- User maintains full control to edit/delete
+- All personal data stored locally in `~/.claude/over-50s-health-advisor/context/`
+- Plain Markdown format (user-readable and editable)
+- Never committed to version control
+- No cloud storage of health information
+- User maintains full control
 
-## Open Questions for Clarification
+## Testing & Validation
 
-### 1. Scope & Features
-- Should the agent proactively offer to create workout plans, or only when asked?
-- How detailed should meal plans be (specific recipes vs general guidelines)?
-- Should the agent track progress metrics over time, or just reference them?
+All test procedures documented in `TESTING.md`:
+- Installation tests (user and project scope)
+- Overwrite and preservation behavior
+- Cross-directory invocation
+- Context file structure validation
+- Git ignore verification
+- Documentation coherence checks
 
-### 2. Context Management
-- Should the agent automatically update context files during conversations, or always ask first?
-- What's the preferred archival strategy (single archive file vs yearly files)?
-- Should context files use structured format (YAML frontmatter + markdown) or pure markdown?
+## Repository Information
 
-### 3. Installation & Distribution
-- Should install script be idempotent (safe to run multiple times)?
-- Do you want versioning for the agent definition?
-- Should there be an uninstall script?
+- **GitHub**: https://github.com/ali5ter/over-50s-health-advisor
+- **License**: MIT License (Copyright 2026 Alister Lewis-Bowen)
+- **Language**: Markdown (agent definition), Bash (install script)
+- **Requirements**: Claude Code CLI
 
-### 4. Evidence Standards
-- Acceptable source types: Only .gov/.edu, or include reputable .org and .com health sites?
-- How recent should evidence be (prefer sources from last X years)?
-- Should the agent maintain a curated sources database in SOURCES.md?
+## Breaking Changes
 
-### 5. User Interaction
-- Should the agent ask for initial profile information on first invocation?
-- Preferred tone: clinical professional, friendly coach, or balanced blend?
-- Should responses include visuals/tables for plans, or text-only?
+**v2.0 (2026-01-28)**: Restructured to user-level scope
+- Context paths changed from `context/user/` to `~/.claude/over-50s-health-advisor/context/`
+- Install script now defaults to user scope (use `--project` for old behavior)
+- Existing users need to reinstall: `./install.sh`
 
-## Implementation Risk Assessment
+## Development Notes
 
-**Low Risk**:
-- Agent definition creation
-- Template file structure
-- Basic install script
+**For contributors**:
+1. Install in project scope: `./install.sh --project`
+2. Templates are in `context/templates/` (committed)
+3. Test with context files in `context/user/` (gitignored)
+4. Run tests from `TESTING.md` before PR
+5. Update `AGENTS.md` with architectural changes
 
-**Medium Risk**:
-- Context pruning logic (needs careful testing)
-- Citation format consistency
-- Safety boundary edge cases
+**For end users**:
+1. Install normally: `./install.sh`
+2. Edit context files in `~/.claude/over-50s-health-advisor/context/`
+3. Invoke agent from any directory
+4. Agent reads/writes context automatically
 
-**High Risk**:
-- None identified (safety disclaimers mitigate medical advice liability)
+## Success Metrics
 
-## Success Criteria
+- ✅ Agent installs without errors
+- ✅ Works from any directory
+- ✅ Context files preserved on reinstall
+- ✅ Documentation accurate and complete
+- 🔄 User testing with real health queries (pending)
+- 🔄 Cross-directory functionality verified (pending)
 
-1. Agent successfully installs via `install.sh`
-2. Agent triggers correctly when user asks about 50+ health topics
-3. All advice includes evidence-based citations with links
-4. Context files maintain user data locally (verified gitignored)
-5. Safety disclaimers present in every advisory response
-6. User can easily edit/delete context files
-7. Agent reports when context budget approached
-8. README clearly explains usage and safety boundaries
+## Contact & Support
 
-## Next Steps
-
-1. **Clarify open questions** (listed above)
-2. **Create agent definition** following the template in PRD
-3. **Build context template files** with clear structure
-4. **Write install script** with proper error handling
-5. **Create documentation** (README, LICENSE)
-6. **Test installation** in clean environment
-7. **Validate agent behavior** with sample health queries
-8. **Review safety boundaries** with edge case testing
+For issues or feedback:
+- GitHub Issues: https://github.com/ali5ter/over-50s-health-advisor/issues
+- See README.md for usage documentation
+- See TESTING.md for validation procedures
