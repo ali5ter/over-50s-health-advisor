@@ -11,39 +11,57 @@ A Claude Code Agent definition for evidence-based, age-appropriate health, fitne
 
 ## Repository structure
 
+This repository contains the agent definition and context templates for distribution. When installed, the agent and user context files are stored in your home directory.
+
 ```text
 agent/
-  over-50s-health-advisor.md
+  over-50s-health-advisor.md      # Agent definition (source)
 context/
-  templates/
+  templates/                       # Template files for context
     INITIAL_USER_INFORMATION.md
     CLIENT_HEALTH_CONTEXT.md
     CLIENT_PREFERENCES.md
     SESSION_NOTES.md
     SOURCES.md
-  user/   # gitignored
   README.md
-install.sh
+install.sh                         # Installation script
 PROJECT_REQUIREMENTS_DOCUMENT.md
 README.md
 LICENSE
 ```
 
+After installation (user scope), files are stored at:
+
+```text
+~/.claude/
+├── agents/
+│   └── over-50s-health-advisor.md    # Installed agent
+└── over-50s-health-advisor/
+    └── context/                       # Your personal context files
+        ├── INITIAL_USER_INFORMATION.md
+        ├── CLIENT_HEALTH_CONTEXT.md
+        ├── CLIENT_PREFERENCES.md
+        ├── SESSION_NOTES.md
+        └── SOURCES.md
+```
+
 ## Install
 
-Project scope (default):
+User scope (recommended - works from any directory):
 
 ```bash
 ./install.sh
 ```
 
-User scope:
+This installs the agent to `~/.claude/agents/` and creates context files in `~/.claude/over-50s-health-advisor/context/`. The agent can then be invoked from any directory.
+
+Project scope (for development):
 
 ```bash
-./install.sh --User
+./install.sh --project
 ```
 
-Overwrite without prompting:
+Force overwrite without prompting:
 
 ```bash
 ./install.sh --force
@@ -51,16 +69,19 @@ Overwrite without prompting:
 
 ## Usage
 
-1. Copy templates into `context/user/`:
+After installation (user scope), the context files are automatically created at `~/.claude/over-50s-health-advisor/context/`.
 
-   ```bash
-   cp -R context/templates/* context/user/
-   ```
+1. Fill in `~/.claude/over-50s-health-advisor/context/INITIAL_USER_INFORMATION.md` and `CLIENT_PREFERENCES.md` with your information.
+2. Keep `CLIENT_HEALTH_CONTEXT.md` and `SESSION_NOTES.md` current as new information is shared with the agent.
+3. Maintain `SOURCES.md` as a curated reference list (the agent will add sources; you can remove low-quality ones and add high-quality evidence).
+4. Use the agent from any directory in Claude Code. The agent will read and update these context files automatically.
+5. Keep the "Last updated" dates accurate in each file.
 
-2. Fill in `context/user/INITIAL_USER_INFORMATION.md` and `context/user/CLIENT_PREFERENCES.md`.
-3. Keep `context/user/CLIENT_HEALTH_CONTEXT.md` and `context/user/SESSION_NOTES.md` current as new information is shared.
-4. Maintain `context/user/SOURCES.md` as a curated reference list (remove low-quality sources, add high-quality evidence).
-5. Use the agent in Claude Code and update context files after each session; keep the "Last updated" dates accurate.
+For project scope installations, manually copy templates:
+
+```bash
+cp -R context/templates/* context/user/
+```
 
 ## Safety and medical boundaries
 

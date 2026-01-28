@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Last updated: 2026-01-23
+Last updated: 2026-01-28
 
 ## Project Snapshot
 - Project: over-50s-health-advisor
@@ -20,17 +20,39 @@ Last updated: 2026-01-23
   - MD files capturing client context.
   - Public GitHub repo with README and LICENSE.
 
+## Architecture
+
+**User-level scope (default):**
+- Agent installed to `~/.claude/agents/over-50s-health-advisor.md`
+- Context files in `~/.claude/over-50s-health-advisor/context/`
+- Works from any directory
+- Implemented: 2026-01-28
+
+**Project-level scope (development):**
+- Agent in `.claude/agents/` (gitignored)
+- Context files in `context/user/` (gitignored)
+- Works only within project directory
+
 ## Files
 - `PROJECT_REQUIREMENTS_DOCUMENT.md`: Primary PRD.
-- `agent/over-50s-health-advisor.md`: Agent definition.
-- `context/templates/`: Committed context templates.
-- `context/user/`: Real User data (gitignored).
+- `agent/over-50s-health-advisor.md`: Agent definition (source).
+- `context/templates/`: Committed context templates (no personal data).
 - `context/README.md`: Context usage guidance.
-- `install.sh`: Install script.
+- `install.sh`: Install script (defaults to user scope).
 - `README.md`, `LICENSE`, `TESTING.md`: Repo docs.
 
+## Recent Changes (2026-01-28)
+- Restructured to user-level scope by default
+- Context files now stored in `~/.claude/over-50s-health-advisor/context/`
+- Agent works from any directory when installed to user scope
+- Install script preserves existing context files on reinstall
+- Added evidence source guidelines (reputable .org and .com sites)
+- Updated all documentation to reflect new architecture
+
 ## Open Questions / Decisions Needed
-- None currently. PRD is updated; next work is implementation polish or new requirements.
+- None currently.
 
 ## Next Step (Proposed)
-- If desired, run the tests in `TESTING.md` and review the agent definition for tone/coverage.
+- Run the tests in `TESTING.md` to verify user-level installation
+- Test cross-directory invocation
+- Consider creating migration guide for existing users
