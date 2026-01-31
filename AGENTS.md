@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Last updated: 2026-01-28
+Last updated: 2026-01-31
 
 ## Project Snapshot
 - Project: over-50s-health-advisor
@@ -41,7 +41,18 @@ Last updated: 2026-01-28
 - `install.sh`: Install script (defaults to user scope).
 - `README.md`, `LICENSE`, `TESTING.md`: Repo docs.
 
-## Recent Changes (2026-01-28)
+## Recent Changes
+
+### 2026-01-31: Testing Complete, Real-World Usage Initiated
+- All comprehensive testing completed and passed
+- Installation testing verified (user scope, project scope, preservation)
+- Cross-directory invocation validated (multiple test locations)
+- Agent behavior confirmed (context access, citations, safety disclaimers)
+- Documentation coherence validated (all 6 docs checked)
+- Git ignore verification passed (user data properly excluded)
+- Agent now in active personal use for health planning
+
+### 2026-01-28: v2.0 Restructuring
 - Restructured to user-level scope by default
 - Context files now stored in `~/.claude/over-50s-health-advisor/context/`
 - Agent works from any directory when installed to user scope
@@ -49,10 +60,18 @@ Last updated: 2026-01-28
 - Added evidence source guidelines (reputable .org and .com sites)
 - Updated all documentation to reflect new architecture
 
-## Open Questions / Decisions Needed
-- None currently.
+## Current Status
+- **Phase**: Complete (v2.0 implementation and testing finished)
+- **In Use**: Agent actively being used for personal health guidance
+- **Production Ready**: All success metrics achieved for personal use
 
-## Next Step (Proposed)
-- Run the tests in `TESTING.md` to verify user-level installation
-- Test cross-directory invocation
-- Consider creating migration guide for existing users
+## Open Questions / Decisions Needed
+- Consider public release after extended personal usage validation
+- Consider adding version tagging (v2.0.0)
+- Optional: Create migration guide for any existing v1.x users
+
+## Next Steps (Optional)
+- Continue real-world usage to validate context budget management
+- Monitor citation quality across diverse health topics
+- Consider uninstall script for cleaner removal
+- Evaluate session note archival strategy for long-term use
