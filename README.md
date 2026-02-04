@@ -83,6 +83,28 @@ For project scope installations, manually copy templates:
 cp -R context/templates/* context/user/
 ```
 
+## Starting a Conversation
+
+Once you've filled in your initial context files, you can begin interacting with the agent. Here are some ways to start:
+
+**Initial Engagement:**
+- "Where do you see the context files?" - The agent will analyze your context and provide a summary of your health profile, helping establish rapport.
+- "Can you review my health information and suggest areas to focus on?"
+- "What do you know about me so far?"
+
+**Direct Queries:**
+- "What strength training program would you recommend for me?"
+- "Can you suggest a weekly meal plan that supports my goals?"
+- "How can I improve my metabolic health based on my recent labs?"
+- "What mobility exercises should I prioritize?"
+
+**Specific Requests:**
+- "Review my recent blood panel and explain what the trends mean"
+- "Create a 4-week progressive workout plan for me"
+- "Suggest supplements appropriate for my age and health status"
+
+The agent will read your context files, provide evidence-based guidance with citations, and update your context files as you share new information.
+
 ## Safety and medical boundaries
 
 - Educational guidance only, not diagnosis.
