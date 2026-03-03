@@ -7,37 +7,37 @@ A Claude Code Agent definition for evidence-based, age-appropriate health, fitne
 - Evidence-based guidance with citations and a Sources section
 - Safety boundaries and red-flag referral policy
 - Local context management via Markdown files
-- Install script for project or User scope
+- Install via Claude Code plugin system (`/plugin install over-50s-health-advisor@ali5ter`)
+- Automatic context file creation on first run
 
 ## Repository structure
 
-This repository contains the agent definition and context templates for distribution. When installed, the agent and user context files are stored in your home directory.
+This repository contains the agent definition and context templates for distribution. When installed via the plugin system, the agent is managed by Claude Code and your personal context files are stored in your home directory.
 
 ```text
-agent/
+agents/
   over-50s-health-advisor.md      # Agent definition (source)
 context/
-  templates/                       # Template files for context
+  templates/                       # Reference context templates
     INITIAL_USER_INFORMATION.md
     CLIENT_HEALTH_CONTEXT.md
     CLIENT_PREFERENCES.md
     SESSION_NOTES.md
     SOURCES.md
   README.md
-install.sh                         # Installation script
-PROJECT_REQUIREMENTS_DOCUMENT.md
+.claude-plugin/
+  plugin.json                      # Plugin manifest
+  marketplace.json                 # Marketplace registration
+migrate                            # Migration script for v2.x users
 README.md
 LICENSE
 ```
 
-After installation (user scope), files are stored at:
+After installation, your personal context files are stored at:
 
 ```text
-~/.claude/
-├── agents/
-│   └── over-50s-health-advisor.md    # Installed agent
-└── over-50s-health-advisor/
-    └── context/                       # Your personal context files
+~/.claude/over-50s-health-advisor/
+    context/                       # Your personal context files (auto-created on first run)
         ├── INITIAL_USER_INFORMATION.md
         ├── CLIENT_HEALTH_CONTEXT.md
         ├── CLIENT_PREFERENCES.md
@@ -47,41 +47,34 @@ After installation (user scope), files are stored at:
 
 ## Install
 
-User scope (recommended - works from any directory):
+Inside Claude Code, run:
 
-```bash
-./install.sh
+```
+/plugin marketplace add ali5ter/over-50s-health-advisor
+/plugin install over-50s-health-advisor@ali5ter
 ```
 
-This installs the agent to `~/.claude/agents/` and creates context files in `~/.claude/over-50s-health-advisor/context/`. The agent can then be invoked from any directory.
+The first time you start a health conversation, the agent automatically creates your context files at `~/.claude/over-50s-health-advisor/context/`.
 
-Project scope (for development):
+## Migrating from v2.x
 
-```bash
-./install.sh --project
-```
-
-Force overwrite without prompting:
+If you previously installed via `./install.sh`, run the migration script from this repo:
 
 ```bash
-./install.sh --force
+./migrate
 ```
+
+This removes the old manually-installed agent file. Your context files are preserved. Then install via the plugin commands above.
 
 ## Usage
 
-After installation (user scope), the context files are automatically created at `~/.claude/over-50s-health-advisor/context/`.
+After installation, context files are automatically created at `~/.claude/over-50s-health-advisor/context/` on your first conversation.
 
 1. Fill in `~/.claude/over-50s-health-advisor/context/INITIAL_USER_INFORMATION.md` and `CLIENT_PREFERENCES.md` with your information.
 2. Keep `CLIENT_HEALTH_CONTEXT.md` and `SESSION_NOTES.md` current as new information is shared with the agent.
 3. Maintain `SOURCES.md` as a curated reference list (the agent will add sources; you can remove low-quality ones and add high-quality evidence).
 4. Use the agent from any directory in Claude Code. The agent will read and update these context files automatically.
 5. Keep the "Last updated" dates accurate in each file.
-
-For project scope installations, manually copy templates:
-
-```bash
-cp -R context/templates/* context/user/
-```
 
 ## Starting a Conversation
 

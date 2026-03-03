@@ -1,0 +1,15 @@
+{
+  "name": "ali5ter",
+  "owner": { "name": "Alister Lewis-Bowen", "url": "https://github.com/ali5ter" },
+  "metadata": { "description": "Plugins by ali5ter" },
+  "plugins": [
+    {
+      "name": "over-50s-health-advisor",
+      "source": { "source": "github", "repo": "ali5ter/over-50s-health-advisor" },
+      "description": "Evidence-based health guidance for adults 50+",
+      "version": "3.0.0",
+      "license": "MIT",
+      "keywords": ["health", "fitness", "nutrition", "longevity"]
+    }
+  ]
+}

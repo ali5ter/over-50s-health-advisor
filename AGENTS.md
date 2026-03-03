@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Last updated: 2026-01-31
+Last updated: 2026-03-03
 
 ## Project Snapshot
 - Project: over-50s-health-advisor
@@ -22,26 +22,41 @@ Last updated: 2026-01-31
 
 ## Architecture
 
-**User-level scope (default):**
-- Agent installed to `~/.claude/agents/over-50s-health-advisor.md`
-- Context files in `~/.claude/over-50s-health-advisor/context/`
+**v3.0 — Claude Code plugin framework (current):**
+- Distributed via Claude Code native plugin system
+- Install: `/plugin marketplace add ali5ter/over-50s-health-advisor` then `/plugin install over-50s-health-advisor@ali5ter`
+- Agent managed by Claude Code plugin infrastructure
+- Context files in `~/.claude/over-50s-health-advisor/context/` (auto-created on first run)
 - Works from any directory
-- Implemented: 2026-01-28
+- No bash installer or manual file copying required
+- Implemented: 2026-03-03
 
-**Project-level scope (development):**
-- Agent in `.claude/agents/` (gitignored)
-- Context files in `context/user/` (gitignored)
-- Works only within project directory
+**v2.0 — User-level scope (deprecated):**
+- Agent installed to `~/.claude/agents/over-50s-health-advisor.md` via `install.sh`
+- Context files in `~/.claude/over-50s-health-advisor/context/`
+- Migrate with `./migrate` then reinstall via plugin commands
 
 ## Files
 - `PROJECT_REQUIREMENTS_DOCUMENT.md`: Primary PRD.
-- `agent/over-50s-health-advisor.md`: Agent definition (source).
-- `context/templates/`: Committed context templates (no personal data).
+- `agents/over-50s-health-advisor.md`: Agent definition (source).
+- `.claude-plugin/plugin.json`: Plugin manifest (name, version, description).
+- `.claude-plugin/marketplace.json`: Marketplace registration for `/plugin marketplace add`.
+- `context/templates/`: Reference context templates (no personal data).
 - `context/README.md`: Context usage guidance.
-- `install.sh`: Install script (defaults to user scope).
+- `install`: Deprecation notice script (replaced by plugin system).
+- `migrate`: Migration script for v2.x users removing old `~/.claude/agents/` file.
 - `README.md`, `LICENSE`, `TESTING.md`: Repo docs.
 
 ## Recent Changes
+
+### 2026-03-03: v3.0 Plugin Framework Migration
+- Migrated from bash installer to Claude Code native plugin framework
+- Added `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`
+- Renamed `agent/` → `agents/` (plugin framework convention)
+- Agent now self-initializes context files on first run (no separate install step)
+- Replaced `install.sh` with `install` deprecation notice script
+- Added `migrate` script for v2.x users
+- Updated all documentation for plugin-based installation
 
 ### 2026-01-31: Testing Complete, Real-World Usage Initiated
 - All comprehensive testing completed and passed
@@ -61,17 +76,15 @@ Last updated: 2026-01-31
 - Updated all documentation to reflect new architecture
 
 ## Current Status
-- **Phase**: Complete (v2.0 implementation and testing finished)
+- **Phase**: Complete (v3.0 plugin framework migration finished)
 - **In Use**: Agent actively being used for personal health guidance
-- **Production Ready**: All success metrics achieved for personal use
+- **Production Ready**: Plugin-based distribution ready for public release
 
 ## Open Questions / Decisions Needed
-- Consider public release after extended personal usage validation
-- Consider adding version tagging (v2.0.0)
-- Optional: Create migration guide for any existing v1.x users
+- Consider tagging v3.0.0 release after validating plugin install flow
+- Optional: Create uninstall guidance for plugin removal
 
 ## Next Steps (Optional)
 - Continue real-world usage to validate context budget management
 - Monitor citation quality across diverse health topics
-- Consider uninstall script for cleaner removal
 - Evaluate session note archival strategy for long-term use

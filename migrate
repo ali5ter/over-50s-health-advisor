@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+OLD_AGENT="$HOME/.claude/agents/over-50s-health-advisor.md"
+
+if [[ ! -f "$OLD_AGENT" ]]; then
+    echo "No old installation found. Nothing to migrate."
+    exit 0
+fi
+
+echo "Found v2.x installation at $OLD_AGENT"
+rm -f "$OLD_AGENT"
+echo "Removed old agent file. Your context files are untouched."
+echo ""
+echo "Now run these commands inside Claude Code:"
+echo ""
+echo "  /plugin marketplace add ali5ter/over-50s-health-advisor"
+echo "  /plugin install over-50s-health-advisor@ali5ter"

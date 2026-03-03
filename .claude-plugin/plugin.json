@@ -1,0 +1,10 @@
+{
+  "name": "over-50s-health-advisor",
+  "version": "3.0.0",
+  "description": "Evidence-based health, fitness, nutrition, and longevity guidance for adults 50+",
+  "author": { "name": "Alister Lewis-Bowen", "url": "https://github.com/ali5ter" },
+  "homepage": "https://github.com/ali5ter/over-50s-health-advisor",
+  "repository": "https://github.com/ali5ter/over-50s-health-advisor",
+  "license": "MIT",
+  "keywords": ["health", "fitness", "nutrition", "longevity", "50+"]
+}

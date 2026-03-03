@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+cat <<'EOF'
+The bash installer has been replaced by the Claude Code plugin system.
+
+New install (run inside Claude Code):
+
+  /plugin marketplace add ali5ter/over-50s-health-advisor
+  /plugin install over-50s-health-advisor@ali5ter
+
+The first time you start a conversation, the agent will create your context files
+automatically — no separate setup step needed.
+
+Upgrading from v2.x? Run the migration script first:
+
+  ./migrate
+
+Then install via the plugin commands above.
+EOF
