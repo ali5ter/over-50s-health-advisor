@@ -38,7 +38,6 @@ Context files auto-created on first run at:
 agents/over-50s-health-advisor.md       # Agent definition (source)
 .claude-plugin/
   plugin.json                           # Plugin manifest
-  marketplace.json                      # Marketplace registration
 context/
   templates/                            # Context file templates (reference)
     INITIAL_USER_INFORMATION.md
@@ -220,7 +219,7 @@ All test procedures documented in `TESTING.md`:
 **Session Summary**: Migrated from bash-based installer to Claude Code native plugin framework.
 
 **Changes implemented**:
-- Added `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`
+- Added `.claude-plugin/plugin.json`
 - Renamed `agent/` → `agents/` (plugin framework convention)
 - Added first-run context initialization to agent definition (self-bootstrapping)
 - Replaced `install.sh` with `install` deprecation notice script

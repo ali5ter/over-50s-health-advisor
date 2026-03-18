@@ -27,7 +27,6 @@ context/
   README.md
 .claude-plugin/
   plugin.json                      # Plugin manifest
-  marketplace.json                 # Marketplace registration
 migrate                            # Migration script for v2.x users
 README.md
 LICENSE

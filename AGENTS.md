@@ -40,7 +40,6 @@ Last updated: 2026-03-03
 - `PROJECT_REQUIREMENTS_DOCUMENT.md`: Primary PRD.
 - `agents/over-50s-health-advisor.md`: Agent definition (source).
 - `.claude-plugin/plugin.json`: Plugin manifest (name, version, description).
-- `.claude-plugin/marketplace.json`: Marketplace registration for `/plugin marketplace add`.
 - `context/templates/`: Reference context templates (no personal data).
 - `context/README.md`: Context usage guidance.
 - `install`: Deprecation notice script (replaced by plugin system).
@@ -51,7 +50,7 @@ Last updated: 2026-03-03
 
 ### 2026-03-03: v3.0 Plugin Framework Migration
 - Migrated from bash installer to Claude Code native plugin framework
-- Added `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`
+- Added `.claude-plugin/plugin.json`
 - Renamed `agent/` → `agents/` (plugin framework convention)
 - Agent now self-initializes context files on first run (no separate install step)
 - Replaced `install.sh` with `install` deprecation notice script
