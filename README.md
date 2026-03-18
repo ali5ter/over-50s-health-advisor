@@ -7,7 +7,7 @@ A Claude Code Agent definition for evidence-based, age-appropriate health, fitne
 - Evidence-based guidance with citations and a Sources section
 - Safety boundaries and red-flag referral policy
 - Local context management via Markdown files
-- Install via Claude Code plugin system (`/plugin install over-50s-health-advisor@ali5ter`)
+- Install via Claude Code plugin system (`/plugin install over-50s-health@ali5ter`)
 - Automatic context file creation on first run
 
 ## Repository structure
@@ -16,7 +16,7 @@ This repository contains the agent definition and context templates for distribu
 
 ```text
 agents/
-  over-50s-health-advisor.md      # Agent definition (source)
+  advisor.md                       # Agent definition (source)
 context/
   templates/                       # Reference context templates
     INITIAL_USER_INFORMATION.md
@@ -50,7 +50,7 @@ Inside Claude Code, run:
 
 ```
 /plugin marketplace add ali5ter/claude-plugins
-/plugin install over-50s-health-advisor@ali5ter
+/plugin install over-50s-health@ali5ter
 ```
 
 The first time you start a health conversation, the agent automatically creates your context files at `~/.claude/over-50s-health-advisor/context/`.

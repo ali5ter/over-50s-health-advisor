@@ -24,7 +24,7 @@ Last updated: 2026-03-18
 
 **v3.0 — Claude Code plugin framework (current):**
 - Distributed via Claude Code native plugin system
-- Install: `/plugin marketplace add ali5ter/claude-plugins` then `/plugin install over-50s-health-advisor@ali5ter`
+- Install: `/plugin marketplace add ali5ter/claude-plugins` then `/plugin install over-50s-health@ali5ter`
 - Agent managed by Claude Code plugin infrastructure
 - Context files in `~/.claude/over-50s-health-advisor/context/` (auto-created on first run)
 - Works from any directory
@@ -32,13 +32,13 @@ Last updated: 2026-03-18
 - Implemented: 2026-03-03
 
 **v2.0 — User-level scope (deprecated):**
-- Agent installed to `~/.claude/agents/over-50s-health-advisor.md` via `install.sh`
+- Agent installed to `~/.claude/agents/over-50s-health-advisor.md` via `install.sh` (legacy agent ID: `over-50s-health-advisor`)
 - Context files in `~/.claude/over-50s-health-advisor/context/`
 - Migrate with `./migrate` then reinstall via plugin commands
 
 ## Files
 - `PROJECT_REQUIREMENTS_DOCUMENT.md`: Primary PRD.
-- `agents/over-50s-health-advisor.md`: Agent definition (source).
+- `agents/advisor.md`: Agent definition (source).
 - `.claude-plugin/plugin.json`: Plugin manifest (name, version, description).
 - `context/templates/`: Reference context templates (no personal data).
 - `context/README.md`: Context usage guidance.
@@ -48,10 +48,17 @@ Last updated: 2026-03-18
 
 ## Recent Changes
 
+### 2026-03-18: Rename to domain:role convention (v3.1.0)
+- Plugin name: `over-50s-health-advisor` → `over-50s-health`
+- Agent file: `agents/over-50s-health-advisor.md` → `agents/advisor.md`
+- Agent ID: `over-50s-health-advisor` → `over-50s-health:advisor`
+- Install command: `/plugin install over-50s-health@ali5ter`
+- Version bumped to 3.1.0
+
 ### 2026-03-18: Migrate to ali5ter/claude-plugins Central Marketplace
 - Removed `.claude-plugin/marketplace.json` (superseded by central marketplace)
 - Updated all install documentation (AGENTS.md, CLAUDE.md, README.md, `install`, `migrate`) to reference `ali5ter/claude-plugins`
-- Canonical install flow: `/plugin marketplace add ali5ter/claude-plugins` then `/plugin install over-50s-health-advisor@ali5ter`
+- Canonical install flow: `/plugin marketplace add ali5ter/claude-plugins` then `/plugin install over-50s-health@ali5ter`
 
 ### 2026-03-03: v3.0 Plugin Framework Migration
 - Migrated from bash installer to Claude Code native plugin framework

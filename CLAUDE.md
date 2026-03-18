@@ -12,7 +12,7 @@ A Claude Code Agent that provides evidence-based, age-appropriate health guidanc
 ```
 Install via Claude Code:
   /plugin marketplace add ali5ter/claude-plugins
-  /plugin install over-50s-health-advisor@ali5ter
+  /plugin install over-50s-health@ali5ter
 
 Context files auto-created on first run at:
 ~/.claude/over-50s-health-advisor/
@@ -35,7 +35,7 @@ Context files auto-created on first run at:
 ## Repository Structure
 
 ```
-agents/over-50s-health-advisor.md       # Agent definition (source)
+agents/advisor.md                        # Agent definition (source)
 .claude-plugin/
   plugin.json                           # Plugin manifest
 context/
@@ -200,14 +200,14 @@ All test procedures documented in `TESTING.md`:
 ## Development Notes
 
 **For contributors**:
-1. Clone repo and work directly from `agents/over-50s-health-advisor.md`
+1. Clone repo and work directly from `agents/advisor.md`
 2. Templates are in `context/templates/` (committed as reference)
 3. Test with context files in `context/user/` (gitignored)
 4. Run tests from `TESTING.md` before PR
 5. Update `AGENTS.md` with architectural changes
 
 **For end users**:
-1. Install via plugin: `/plugin marketplace add ali5ter/claude-plugins` then `/plugin install over-50s-health-advisor@ali5ter`
+1. Install via plugin: `/plugin marketplace add ali5ter/claude-plugins` then `/plugin install over-50s-health@ali5ter`
 2. Edit context files in `~/.claude/over-50s-health-advisor/context/` (auto-created on first run)
 3. Invoke agent from any directory
 4. Agent reads/writes context automatically
@@ -223,7 +223,7 @@ All test procedures documented in `TESTING.md`:
 - Updated AGENTS.md, CLAUDE.md, README.md, `install`, and `migrate` to reference the `ali5ter/claude-plugins` marketplace
 - Canonical install flow now fully established:
   1. `/plugin marketplace add ali5ter/claude-plugins`
-  2. `/plugin install over-50s-health-advisor@ali5ter`
+  2. `/plugin install over-50s-health@ali5ter`
 
 **Decision**: Central marketplace (`ali5ter/claude-plugins`) preferred over per-repo `marketplace.json` to simplify plugin discovery and keep distribution metadata in a single authoritative location.
 
