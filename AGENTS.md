@@ -95,6 +95,13 @@ Last updated: 2026-03-18
 - Consider tagging v3.0.0 release after validating plugin install flow
 - Optional: Create uninstall guidance for plugin removal
 
+## Publishing Updates
+
+After bumping the version in `plugin.json` and `agents/advisor.md`, committing, and pushing:
+
+- Run `/plugin marketplace update ali5ter` in Claude Code before installing — the installer
+  uses a cached catalog and will not see the new version without an explicit update.
+
 ## Next Steps (Optional)
 - Continue real-world usage to validate context budget management
 - Monitor citation quality across diverse health topics
