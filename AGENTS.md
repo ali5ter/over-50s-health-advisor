@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Last updated: 2026-03-03
+Last updated: 2026-03-18
 
 ## Project Snapshot
 - Project: over-50s-health-advisor
@@ -47,6 +47,11 @@ Last updated: 2026-03-03
 - `README.md`, `LICENSE`, `TESTING.md`: Repo docs.
 
 ## Recent Changes
+
+### 2026-03-18: Migrate to ali5ter/claude-plugins Central Marketplace
+- Removed `.claude-plugin/marketplace.json` (superseded by central marketplace)
+- Updated all install documentation (AGENTS.md, CLAUDE.md, README.md, `install`, `migrate`) to reference `ali5ter/claude-plugins`
+- Canonical install flow: `/plugin marketplace add ali5ter/claude-plugins` then `/plugin install over-50s-health-advisor@ali5ter`
 
 ### 2026-03-03: v3.0 Plugin Framework Migration
 - Migrated from bash installer to Claude Code native plugin framework

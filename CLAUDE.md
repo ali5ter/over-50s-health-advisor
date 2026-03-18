@@ -1,6 +1,6 @@
 # Over-50s Health Advisor - Project Status
 
-**Last updated**: 2026-03-03
+**Last updated**: 2026-03-18
 
 ## Project Overview
 
@@ -213,6 +213,21 @@ All test procedures documented in `TESTING.md`:
 4. Agent reads/writes context automatically
 
 ## Project Status History
+
+### v3.0 Marketplace Migration (2026-03-18)
+
+**Session Summary**: Migrated plugin distribution to the `ali5ter/claude-plugins` central marketplace. No agent or context file changes.
+
+**Changes implemented**:
+- Removed `.claude-plugin/marketplace.json` (superseded by central marketplace repo)
+- Updated AGENTS.md, CLAUDE.md, README.md, `install`, and `migrate` to reference the `ali5ter/claude-plugins` marketplace
+- Canonical install flow now fully established:
+  1. `/plugin marketplace add ali5ter/claude-plugins`
+  2. `/plugin install over-50s-health-advisor@ali5ter`
+
+**Decision**: Central marketplace (`ali5ter/claude-plugins`) preferred over per-repo `marketplace.json` to simplify plugin discovery and keep distribution metadata in a single authoritative location.
+
+**Status**: Distribution fully stabilized. Agent in active personal use.
 
 ### v3.0 Plugin Framework Migration (2026-03-03)
 
