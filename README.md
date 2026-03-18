@@ -50,7 +50,7 @@ After installation, your personal context files are stored at:
 Inside Claude Code, run:
 
 ```
-/plugin marketplace add ali5ter/over-50s-health-advisor
+/plugin marketplace add ali5ter/claude-plugins
 /plugin install over-50s-health-advisor@ali5ter
 ```
 

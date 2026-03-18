@@ -11,7 +11,7 @@ A Claude Code Agent that provides evidence-based, age-appropriate health guidanc
 **Claude Code plugin framework** (implemented 2026-03-03):
 ```
 Install via Claude Code:
-  /plugin marketplace add ali5ter/over-50s-health-advisor
+  /plugin marketplace add ali5ter/claude-plugins
   /plugin install over-50s-health-advisor@ali5ter
 
 Context files auto-created on first run at:
@@ -208,7 +208,7 @@ All test procedures documented in `TESTING.md`:
 5. Update `AGENTS.md` with architectural changes
 
 **For end users**:
-1. Install via plugin: `/plugin marketplace add ali5ter/over-50s-health-advisor` then `/plugin install over-50s-health-advisor@ali5ter`
+1. Install via plugin: `/plugin marketplace add ali5ter/claude-plugins` then `/plugin install over-50s-health-advisor@ali5ter`
 2. Edit context files in `~/.claude/over-50s-health-advisor/context/` (auto-created on first run)
 3. Invoke agent from any directory
 4. Agent reads/writes context automatically

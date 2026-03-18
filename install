@@ -4,7 +4,7 @@ The bash installer has been replaced by the Claude Code plugin system.
 
 New install (run inside Claude Code):
 
-  /plugin marketplace add ali5ter/over-50s-health-advisor
+  /plugin marketplace add ali5ter/claude-plugins
   /plugin install over-50s-health-advisor@ali5ter
 
 The first time you start a conversation, the agent will create your context files

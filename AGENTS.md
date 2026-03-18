@@ -24,7 +24,7 @@ Last updated: 2026-03-03
 
 **v3.0 — Claude Code plugin framework (current):**
 - Distributed via Claude Code native plugin system
-- Install: `/plugin marketplace add ali5ter/over-50s-health-advisor` then `/plugin install over-50s-health-advisor@ali5ter`
+- Install: `/plugin marketplace add ali5ter/claude-plugins` then `/plugin install over-50s-health-advisor@ali5ter`
 - Agent managed by Claude Code plugin infrastructure
 - Context files in `~/.claude/over-50s-health-advisor/context/` (auto-created on first run)
 - Works from any directory
