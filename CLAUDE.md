@@ -4,12 +4,15 @@
 
 ## Project Overview
 
-A Claude Code Agent that provides evidence-based, age-appropriate health guidance for adults 50+. Specializes in fitness, nutrition, metabolic health, mental health, sleep, and longevity with mandatory citations and safety boundaries.
+A Claude Code Agent that provides evidence-based, age-appropriate health guidance for adults 50+. Specializes in
+fitness, nutrition, metabolic health, mental health, sleep, and longevity with mandatory citations and safety
+boundaries.
 
 ## Current Architecture (v3.0)
 
 **Claude Code plugin framework** (implemented 2026-03-03):
-```
+
+```text
 Install via Claude Code:
   /plugin marketplace add ali5ter/claude-plugins
   /plugin install over-50s-health@ali5ter
@@ -25,6 +28,7 @@ Context files auto-created on first run at:
 ```
 
 **Key features**:
+
 - Install from anywhere via `/plugin` commands — no cloning required
 - Agent self-initializes context files on first run
 - Works from any directory
@@ -34,7 +38,7 @@ Context files auto-created on first run at:
 
 ## Repository Structure
 
-```
+```text
 agents/advisor.md                        # Agent definition (source)
 .claude-plugin/
   plugin.json                           # Plugin manifest
@@ -122,6 +126,7 @@ LICENSE                                 # MIT License
 ### 🔄 In Progress
 
 **Real-world validation** (2026-01-31 onwards):
+
 - Agent actively being used for personal health planning
 - Gathering user health context and creating personalized plans
 - Monitoring context budget management over time
@@ -144,23 +149,27 @@ LICENSE                                 # MIT License
 ## Design Decisions
 
 ### Context Budget Management
+
 - Target: 1,500-2,500 words across all context files
 - Agent monitors and reports when approaching limits
 - User approval required before pruning
 
 ### Evidence Standards
+
 - Credible sources required for all recommendations
 - Accept: .gov, .edu, reputable .org, credible medical .com sites
 - Evaluate each source for authority and relevance
 - Mandatory "Sources:" section with links
 
 ### Safety Boundaries
+
 - Education only, never diagnosis
 - Emergency symptom referral (chest pain, stroke signs, etc.)
 - Medication questions referred to clinician/pharmacist
 - Mental health crisis referral to professional support
 
 ### Privacy Architecture
+
 - All personal data stored locally in `~/.claude/over-50s-health-advisor/context/`
 - Plain Markdown format (user-readable and editable)
 - Never committed to version control
@@ -170,6 +179,7 @@ LICENSE                                 # MIT License
 ## Testing & Validation
 
 All test procedures documented in `TESTING.md`:
+
 - Installation tests (user and project scope)
 - Overwrite and preservation behavior
 - Cross-directory invocation
@@ -179,7 +189,7 @@ All test procedures documented in `TESTING.md`:
 
 ## Repository Information
 
-- **GitHub**: https://github.com/ali5ter/over-50s-health-advisor
+- **GitHub**: <https://github.com/ali5ter/over-50s-health-advisor>
 - **License**: MIT License (Copyright 2026 Alister Lewis-Bowen)
 - **Language**: Markdown (agent definition, plugin manifests), Bash (migrate script)
 - **Requirements**: Claude Code CLI
@@ -187,6 +197,7 @@ All test procedures documented in `TESTING.md`:
 ## Breaking Changes
 
 **v3.0 (2026-03-03)**: Migrated to Claude Code plugin framework
+
 - Install via `/plugin` commands instead of bash script
 - Agent self-initializes context files on first run
 - `agent/` renamed to `agents/` (plugin framework convention)
@@ -194,12 +205,14 @@ All test procedures documented in `TESTING.md`:
 - Existing v2.x users: run `./migrate` then reinstall via plugin commands
 
 **v2.0 (2026-01-28)**: Restructured to user-level scope
+
 - Context paths changed from `context/user/` to `~/.claude/over-50s-health-advisor/context/`
 - Install script defaulted to user scope (use `--project` for old behavior)
 
 ## Development Notes
 
 **For contributors**:
+
 1. Clone repo and work directly from `agents/advisor.md`
 2. Templates are in `context/templates/` (committed as reference)
 3. Test with context files in `context/user/` (gitignored)
@@ -207,6 +220,7 @@ All test procedures documented in `TESTING.md`:
 5. Update `AGENTS.md` with architectural changes
 
 **For end users**:
+
 1. Install via plugin: `/plugin marketplace add ali5ter/claude-plugins` then `/plugin install over-50s-health@ali5ter`
 2. Edit context files in `~/.claude/over-50s-health-advisor/context/` (auto-created on first run)
 3. Invoke agent from any directory
@@ -216,16 +230,20 @@ All test procedures documented in `TESTING.md`:
 
 ### v3.0 Marketplace Migration (2026-03-18)
 
-**Session Summary**: Migrated plugin distribution to the `ali5ter/claude-plugins` central marketplace. No agent or context file changes.
+**Session Summary**: Migrated plugin distribution to the `ali5ter/claude-plugins` central marketplace. No agent or
+context file changes.
 
 **Changes implemented**:
+
 - Removed `.claude-plugin/marketplace.json` (superseded by central marketplace repo)
-- Updated AGENTS.md, CLAUDE.md, README.md, `install`, and `migrate` to reference the `ali5ter/claude-plugins` marketplace
+- Updated AGENTS.md, CLAUDE.md, README.md, `install`, and `migrate` to reference the `ali5ter/claude-plugins`
+  marketplace
 - Canonical install flow now fully established:
   1. `/plugin marketplace add ali5ter/claude-plugins`
   2. `/plugin install over-50s-health@ali5ter`
 
-**Decision**: Central marketplace (`ali5ter/claude-plugins`) preferred over per-repo `marketplace.json` to simplify plugin discovery and keep distribution metadata in a single authoritative location.
+**Decision**: Central marketplace (`ali5ter/claude-plugins`) preferred over per-repo `marketplace.json` to simplify
+plugin discovery and keep distribution metadata in a single authoritative location.
 
 **Status**: Distribution fully stabilized. Agent in active personal use.
 
@@ -234,6 +252,7 @@ All test procedures documented in `TESTING.md`:
 **Session Summary**: Migrated from bash-based installer to Claude Code native plugin framework.
 
 **Changes implemented**:
+
 - Added `.claude-plugin/plugin.json`
 - Renamed `agent/` → `agents/` (plugin framework convention)
 - Added first-run context initialization to agent definition (self-bootstrapping)
@@ -242,6 +261,7 @@ All test procedures documented in `TESTING.md`:
 - Updated README.md, AGENTS.md, CLAUDE.md for plugin-based workflow
 
 **Architecture validated**:
+
 - Plugin manifest files follow Claude Code plugin framework format
 - Agent can self-create context files on first run without installer
 - Migration path clear for existing v2.x users
@@ -254,6 +274,7 @@ All test procedures documented in `TESTING.md`:
 **Session Summary**: All comprehensive testing completed and validated. Agent now in active personal use.
 
 **Testing Completed**:
+
 - Installation testing (user scope, project scope, preservation logic)
 - Cross-directory invocation (project dir, home dir, arbitrary directories)
 - Agent behavior validation (context file access, citations, safety disclaimers)
@@ -261,18 +282,21 @@ All test procedures documented in `TESTING.md`:
 - Git ignore verification (user data properly excluded)
 
 **Real-World Usage Initiated**:
+
 - Agent actively being used for personal health planning
 - Gathering user health context successfully
 - Creating personalized fitness and nutrition plans
 - Validating practical utility of v2.0 architecture
 
-**Status**: Project moved to "Complete" phase. All implementation and testing goals achieved. Ongoing real-world usage for refinement and validation.
+**Status**: Project moved to "Complete" phase. All implementation and testing goals achieved. Ongoing real-world usage
+for refinement and validation.
 
 ### v2.0 Implementation Complete (2026-01-28)
 
 **Session Summary**: Completed full v2.0 restructuring from project-level to user-level scope.
 
 **Changes implemented**:
+
 - Agent definition updated with absolute paths (`~/.claude/over-50s-health-advisor/context/`)
 - Install script rewritten (user scope default, `--project` flag for development)
 - Context preservation logic (never overwrites existing user data)
@@ -281,6 +305,7 @@ All test procedures documented in `TESTING.md`:
 - Two commits pushed: restructuring (cec9595) and CLAUDE.md update (b68370e)
 
 **Architecture validated**:
+
 - Cross-directory functionality enabled
 - Privacy-preserving local storage
 - Clean separation of templates vs user data
@@ -289,6 +314,7 @@ All test procedures documented in `TESTING.md`:
 ## Success Metrics
 
 **v2.0 Implementation** (2026-01-28):
+
 - ✅ Agent installs without errors
 - ✅ Works from any directory (architecture implemented)
 - ✅ Context files preserved on reinstall (preservation logic implemented)
@@ -296,6 +322,7 @@ All test procedures documented in `TESTING.md`:
 - ✅ v2.0 restructuring complete
 
 **v2.0 Testing & Validation** (2026-01-31):
+
 - ✅ Installation testing completed (user and project scope)
 - ✅ Cross-directory functionality verified (multiple test locations)
 - ✅ Agent behavior validated (reads/writes context correctly)
@@ -308,6 +335,7 @@ All test procedures documented in `TESTING.md`:
 ## Contact & Support
 
 For issues or feedback:
-- GitHub Issues: https://github.com/ali5ter/over-50s-health-advisor/issues
+
+- GitHub Issues: <https://github.com/ali5ter/over-50s-health-advisor/issues>
 - See README.md for usage documentation
 - See TESTING.md for validation procedures
