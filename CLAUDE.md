@@ -1,6 +1,6 @@
 # Over-50s Health Advisor - Project Status
 
-**Last updated**: 2026-03-18
+**Last updated**: 2026-03-24
 
 ## Project Overview
 
@@ -127,10 +127,13 @@ LICENSE                                 # MIT License
 
 **Real-world validation** (2026-01-31 onwards):
 
-- Agent actively being used for personal health planning
-- Gathering user health context and creating personalized plans
-- Monitoring context budget management over time
-- Validating citation quality across diverse health topics
+- Agent actively being used for weekly health check-ins during 4-week UK travel (Feb 19 – Mar 16, 2026)
+- Context files updated each session — SESSION_NOTES.md and CLIENT_HEALTH_CONTEXT.md are the primary
+  living documents
+- Health recommendations (magnesium, alcohol reduction, evening protocol) have measurable outcomes tracked
+  week-over-week via Oura ring — deep sleep improved from 47 min baseline to 71 min in UK Week 3
+- Context budget management functioning; SESSION_NOTES accumulating but within budget
+- Obsidian Health Progress Log created (Mar 14, 2026) to maintain a structured history of weekly check-ins
 
 ### 📋 Next Steps (Optional Enhancements)
 
