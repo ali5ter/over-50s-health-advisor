@@ -34,6 +34,28 @@ Last updated: 2026-03-18
 | `tools` | `Read, Write, WebSearch, WebFetch` | Minimum required tool set: read/write context files, fetch evidence sources. |
 | `disallowedTools` | `Bash, Edit, Glob, Grep, Agent` | Explicitly denies tools the agent does not need. `Bash` would be a security risk given health data context. `Edit` is redundant with `Write` for context files. `Glob`/`Grep` are unnecessary as context file paths are known. `Agent` subagent spawning is not required for this use case. |
 
+## Native Memory Field — Evaluation Decision
+
+**Decision: do not adopt** (`memory` field not added to agent frontmatter).
+
+Evaluated 2026-03-30 against `memory: local` and `memory: user` options.
+
+**Why declined:**
+
+- The existing context file system already provides everything native memory offers, with better structure.
+  `initialPrompt` auto-loads all five context files at session start, giving the agent the same
+  "injected at session start" benefit without a second storage system.
+- User editability is a first principle of this agent. Context files are designed to be read and updated
+  by the user directly (health records, lab values, clinician notes). Native memory is primarily
+  agent-managed and not intended as a user-editable clinical record.
+- A second storage location fragments the health record. Everything must stay in one known, auditable
+  place: `~/.claude/over-50s-health-advisor/context/`. Splitting facts across `context/` and
+  `agent-memory/` creates an unclear source of truth and raises consistency risk.
+- Privacy story stays simple. One directory, user-owned, outside any project scope.
+
+**Revisit if:** Claude Code adds a `memory: user` option that supports fully user-editable entries and
+a stable, non-project-scoped path without the 200-line injection limit.
+
 ## Minimum CLI Version
 
 The plugin framework (`.claude-plugin/plugin.json`, `/plugin install`) has been present since at least v2.0.73
