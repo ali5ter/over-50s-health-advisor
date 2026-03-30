@@ -28,6 +28,7 @@ Last updated: 2026-03-18
 
 | Field | Value | Rationale |
 | --- | --- | --- |
+| `model` | `opus` | Opus 4.6 ($5/$25 per MTok in/out) is ~1.67× more expensive than Sonnet 4.6 ($3/$15). For health guidance where accuracy and careful reasoning matter more than latency, the quality tradeoff is justified. Sonnet remains available as a user override. |
 | `permissionMode` | `acceptEdits` | Auto-approves file edits without prompting. Context file writes happen multiple times per session; per-write prompts interrupt the health conversation. Other actions (e.g. shell commands) still require approval. |
 | `maxTurns` | `40` | Caps sessions at 40 turns to prevent runaway loops or silent context degradation. Covers thorough consultations; the agent summarizes and invites a new session as the limit approaches. |
 | `tools` | `Read, Write, WebSearch, WebFetch` | Minimum required tool set: read/write context files, fetch evidence sources. |
