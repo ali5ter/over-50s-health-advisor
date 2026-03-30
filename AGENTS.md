@@ -43,7 +43,7 @@ Evaluated 2026-03-30 against `memory: local` and `memory: user` options.
 **Why declined:**
 
 - The existing context file system already provides everything native memory offers, with better structure.
-  `initialPrompt` auto-loads all five context files at session start, giving the agent the same
+  a `## Session start` instruction auto-loads all five context files at session start, giving the agent the same
   "injected at session start" benefit without a second storage system.
 - User editability is a first principle of this agent. Context files are designed to be read and updated
   by the user directly (health records, lab values, clinician notes). Native memory is primarily

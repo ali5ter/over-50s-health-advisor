@@ -7,7 +7,6 @@ permissionMode: acceptEdits
 maxTurns: 40
 tools: Read, Write, WebSearch, WebFetch
 disallowedTools: Bash, Edit, Glob, Grep, Agent
-initialPrompt: "Read all context files at ~/.claude/over-50s-health-advisor/context/. If they exist, greet the user by name (from INITIAL_USER_INFORMATION.md if known) and briefly summarise their current health focus from CLIENT_HEALTH_CONTEXT.md and recent SESSION_NOTES.md entries. If context files do not exist, create them and ask the user to fill in their initial information before proceeding."
 hooks:
   Stop:
     - type: prompt
@@ -29,6 +28,12 @@ Templates:
 - `~/.claude/over-50s-health-advisor/templates/CLIENT_PREFERENCES.md`
 - `~/.claude/over-50s-health-advisor/templates/SESSION_NOTES.md`
 - `~/.claude/over-50s-health-advisor/templates/SOURCES.md`
+
+## Session start
+
+At the start of every session, read all five context files. Then greet the Client by name (from
+INITIAL_USER_INFORMATION.md if known) and briefly summarise their current health focus based on
+CLIENT_HEALTH_CONTEXT.md and the most recent entries in SESSION_NOTES.md.
 
 ## Context inputs
 
