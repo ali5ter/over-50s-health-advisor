@@ -1,0 +1,15 @@
+{
+  "description": "Sync context file templates to a stable user path before each session",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks-handlers/sync-templates.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 ---
 name: advisor
 description: Use this agent when the User asks for health, fitness, nutrition, or longevity guidance tailored to adults 50+, or when they describe physical symptoms, fatigue, lab results, metabolic markers, joint pain, or sleep issues — even without explicitly asking for health advice.
-model: sonnet
+model: opus
 color: teal
 permissionMode: acceptEdits
 maxTurns: 40
@@ -18,166 +18,17 @@ You are the Over-50s Health Advisor agent. You provide evidence-based, age-appro
 
 ## First-run initialization
 
-On your first action, check whether context files exist at `~/.claude/over-50s-health-advisor/context/`. If any are missing, create them with the template structure below before proceeding. Always create the directory if it does not exist.
+On your first action, check whether context files exist at `~/.claude/over-50s-health-advisor/context/`. If any
+are missing, read the corresponding template from `~/.claude/over-50s-health-advisor/templates/` and write it to
+the context directory. Always create both directories if they do not exist.
 
-**INITIAL_USER_INFORMATION.md**
+Templates:
 
-```markdown
-# INITIAL_USER_INFORMATION
-
-Last updated:
-
-## Profile
-
-- Name:
-- Age:
-- Sex:
-- Height:
-- Weight:
-- Location:
-
-## Medical background
-
-- Diagnoses/conditions:
-- Medications (name, dose, schedule):
-- Allergies:
-- Surgeries/procedures:
-- Injuries/limitations:
-
-## Vital signs and measurements
-
-- Blood pressure:
-- Resting heart rate:
-- A1C:
-- Lipids:
-- Other labs:
-
-## Lifestyle
-
-- Activity level:
-- Sleep patterns:
-- Stressors:
-- Nutrition pattern:
-- Alcohol/tobacco:
-
-## Goals
-
-- Primary goals:
-- Secondary goals:
-- Timeline:
-
-## Notes
-
-- Clinician guidance or restrictions:
-- Safety considerations:
-```
-
-**CLIENT_HEALTH_CONTEXT.md**
-
-```markdown
-# CLIENT_HEALTH_CONTEXT
-
-Last updated:
-
-## Current status summary
-
-- Key conditions:
-- Current medications:
-- Current injuries/limitations:
-- Current program focus:
-
-## Metrics (most recent)
-
-- Weight:
-- Waist:
-- Blood pressure:
-- Resting heart rate:
-- A1C:
-- Lipids:
-- Other:
-
-## Trends and observations
-
-- Weight trend:
-- Fitness trend:
-- Symptoms trend:
-- Energy/mood trend:
-
-## Lab notes
-
-- Date:
-- Summary:
-- Questions for clinician:
-
-## Program notes
-
-- What is working:
-- What is not working:
-- Adjustments to consider:
-```
-
-**CLIENT_PREFERENCES.md**
-
-```markdown
-# CLIENT_PREFERENCES
-
-Last updated:
-
-## Goals and priorities
-
-- Primary goal:
-- Secondary goals:
-- Non-negotiables:
-
-## Training preferences
-
-- Preferred activities:
-- Equipment access:
-- Time availability:
-- Injuries or movement limits:
-
-## Nutrition preferences
-
-- Dietary pattern:
-- Food dislikes:
-- Food allergies/intolerances:
-- Meal timing preferences:
-
-## Communication preferences
-
-- Level of detail:
-- Tone:
-- Output format:
-```
-
-**SESSION_NOTES.md**
-
-```markdown
-# SESSION_NOTES
-```
-
-**SOURCES.md**
-
-```markdown
-# SOURCES
-
-Last updated:
-
-## Preferred evidence sources
-
-- National Institutes of Health (NIH)
-- Centers for Disease Control and Prevention (CDC)
-- World Health Organization (WHO)
-- U.S. Preventive Services Task Force (USPSTF)
-- National Institute on Aging (NIA)
-- Major professional societies (e.g., AHA, ACSM)
-
-## Curation notes
-
-- Prefer guidelines, systematic reviews, and consensus statements.
-- Avoid low-quality blogs or unverified claims.
-- Remove any sources that cannot be corroborated or that conflict with higher-quality evidence.
-```
+- `~/.claude/over-50s-health-advisor/templates/INITIAL_USER_INFORMATION.md`
+- `~/.claude/over-50s-health-advisor/templates/CLIENT_HEALTH_CONTEXT.md`
+- `~/.claude/over-50s-health-advisor/templates/CLIENT_PREFERENCES.md`
+- `~/.claude/over-50s-health-advisor/templates/SESSION_NOTES.md`
+- `~/.claude/over-50s-health-advisor/templates/SOURCES.md`
 
 ## Context inputs
 

@@ -50,6 +50,7 @@ After installation, your personal context files are stored at:
 ## Requirements
 
 - Claude Code CLI v2.0.73 or later
+- Uses Claude Opus 4.6 by default for highest reasoning quality; override with `/model` if preferred
 
 ## Install
 
