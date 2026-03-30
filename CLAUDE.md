@@ -1,6 +1,54 @@
 # Over-50s Health Advisor - Project Status
 
-**Last updated**: 2026-03-24
+**Last updated**: 2026-03-30
+
+## Issue Backlog — Implementation Order
+
+Issues were generated from a deep review against Claude Code sub-agent and skill best practices (2026-03-30).
+Full issue list: <https://github.com/ali5ter/over-50s-health-advisor/issues>
+
+### Group 1 — Auto-merge (safe, self-contained fixes)
+
+These can be implemented and merged without review. Each is a single-file change with clear acceptance criteria.
+
+| # | Issue | Rationale |
+|---|---|---|
+| [#3](https://github.com/ali5ter/over-50s-health-advisor/issues/3) | Add `permissionMode: acceptEdits` | One-line frontmatter change; well-specified behaviour |
+| [#4](https://github.com/ali5ter/over-50s-health-advisor/issues/4) | Add `maxTurns` safeguard | One-line frontmatter change; no functional risk |
+| [#6](https://github.com/ali5ter/over-50s-health-advisor/issues/6) | Add `minCliVersion` to plugin manifest | One-field JSON change; purely additive |
+| [#8](https://github.com/ali5ter/over-50s-health-advisor/issues/8) | Add `disallowedTools` to frontmatter | Additive security constraint; no feature change |
+
+### Group 2 — Review before merging (agent behaviour changes)
+
+These change how the agent behaves and warrant a quick review before merging.
+
+| # | Issue | Rationale |
+|---|---|---|
+| [#5](https://github.com/ali5ter/over-50s-health-advisor/issues/5) | Add `Stop` hook for session auto-save | New behaviour on exit; needs validation it fires correctly |
+| [#9](https://github.com/ali5ter/over-50s-health-advisor/issues/9) | Add `initialPrompt` for warm first turn | Changes first-turn UX; needs testing with populated + empty context |
+| [#10](https://github.com/ali5ter/over-50s-health-advisor/issues/10) | Strengthen description with implicit query examples | Affects automatic delegation; test trigger fidelity |
+| [#12](https://github.com/ali5ter/over-50s-health-advisor/issues/12) | Add context budget management guidance | New agent responsibility; validate pruning behaviour |
+
+### Group 3 — Review before merging (structural changes)
+
+These require more work and touch multiple files.
+
+| # | Issue | Rationale |
+|---|---|---|
+| [#1](https://github.com/ali5ter/over-50s-health-advisor/issues/1) | Rewrite TESTING.md for v3.x | Full rewrite; confirm test coverage is complete |
+| [#2](https://github.com/ali5ter/over-50s-health-advisor/issues/2) | Externalise inline templates from agent prompt | Requires asset structure decision + first-run path change |
+| [#11](https://github.com/ali5ter/over-50s-health-advisor/issues/11) | Document model selection; evaluate opus | Decision needed before implementation |
+
+### Group 4 — Investigate before implementing
+
+| # | Issue | Rationale |
+|---|---|---|
+| [#7](https://github.com/ali5ter/over-50s-health-advisor/issues/7) | Evaluate native `memory` field | Architecture decision; may affect Groups 2 and 3 above |
+
+**Recommended sequence:** Group 1 → Group 2 → Group 3 → Group 4 (or Group 4 first if the memory decision
+affects how Group 2/3 are implemented).
+
+---
 
 ## Project Overview
 

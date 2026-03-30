@@ -24,6 +24,21 @@ Last updated: 2026-03-18
   - MD files capturing client context.
   - Public GitHub repo with README and LICENSE.
 
+## Agent Frontmatter Settings
+
+| Field | Value | Rationale |
+| --- | --- | --- |
+| `permissionMode` | `acceptEdits` | Auto-approves file edits without prompting. Context file writes happen multiple times per session; per-write prompts interrupt the health conversation. Other actions (e.g. shell commands) still require approval. |
+| `maxTurns` | `40` | Caps sessions at 40 turns to prevent runaway loops or silent context degradation. Covers thorough consultations; the agent summarizes and invites a new session as the limit approaches. |
+| `tools` | `Read, Write, WebSearch, WebFetch` | Minimum required tool set: read/write context files, fetch evidence sources. |
+| `disallowedTools` | `Bash, Edit, Glob, Grep, Agent` | Explicitly denies tools the agent does not need. `Bash` would be a security risk given health data context. `Edit` is redundant with `Write` for context files. `Glob`/`Grep` are unnecessary as context file paths are known. `Agent` subagent spawning is not required for this use case. |
+
+## Minimum CLI Version
+
+The plugin framework (`.claude-plugin/plugin.json`, `/plugin install`) has been present since at least v2.0.73
+(December 2025), the oldest release available in the GitHub changelog. `minCliVersion` is set to `"2.0.73"` in
+`plugin.json` as a conservative lower bound.
+
 ## Architecture
 
 **v3.0 — Claude Code plugin framework (current):**

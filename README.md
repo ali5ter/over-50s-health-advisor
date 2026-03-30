@@ -47,6 +47,10 @@ After installation, your personal context files are stored at:
         └── SOURCES.md
 ```
 
+## Requirements
+
+- Claude Code CLI v2.0.73 or later
+
 ## Install
 
 Inside Claude Code, run:
