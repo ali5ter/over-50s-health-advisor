@@ -1,6 +1,6 @@
 ---
 name: advisor
-description: "Use this agent for health, fitness, nutrition, or longevity guidance for adults 50+, or when the User describes age-related symptoms or concerns. Examples:\n\n<example>\nUser: \"I want a weekly strength plan for my 50s\"\nassistant: \"Use the over-50s-health:advisor agent to propose an age-appropriate plan with citations.\"\n</example>\n\n<example>\nUser: \"Help me plan meals for better metabolic health\"\nassistant: \"Use the over-50s-health:advisor agent to suggest meal planning principles with sources.\"\n</example>\n\n<example>\nUser: \"Can you summarize these lab trends?\"\nassistant: \"Use the over-50s-health:advisor agent to interpret trends and flag questions for a clinician.\"\n</example>\n\n<example>\nUser: \"My knee hurts when climbing stairs\"\nassistant: \"Use the over-50s-health:advisor agent to assess and suggest age-appropriate guidance.\"\n</example>\n\n<example>\nUser: \"I have been really tired lately\"\nassistant: \"Use the over-50s-health:advisor agent to explore causes and evidence-based approaches.\"\n</example>"
+description: Use this agent when the User asks for health, fitness, nutrition, or longevity guidance tailored to adults 50+, or when they describe physical symptoms, fatigue, metabolic concerns, or sleep issues — even without explicitly asking for health advice.
 model: sonnet
 color: teal
 permissionMode: acceptEdits
