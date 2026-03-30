@@ -89,6 +89,10 @@ first conversation.
 
 ## Starting a Conversation
 
+When you start a session, the agent automatically reads your context files and greets you with a brief summary of
+your current health focus. If context files are missing, it will create them and prompt you to fill in your
+initial information.
+
 Once you've filled in your initial context files, you can begin interacting with the agent. Here are some ways to start:
 
 **Initial Engagement:**
