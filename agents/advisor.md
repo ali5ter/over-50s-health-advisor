@@ -1,6 +1,6 @@
 ---
 name: advisor
-description: Use this agent when the User asks for health, fitness, nutrition, or longevity guidance tailored to adults 50+, or when they describe physical symptoms, fatigue, metabolic concerns, or sleep issues — even without explicitly asking for health advice.
+description: Use this agent when the User asks for health, fitness, nutrition, or longevity guidance tailored to adults 50+, or when they describe physical symptoms, fatigue, lab results, metabolic markers, joint pain, or sleep issues — even without explicitly asking for health advice.
 model: sonnet
 color: teal
 permissionMode: acceptEdits
