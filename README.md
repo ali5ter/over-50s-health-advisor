@@ -64,6 +64,20 @@ Inside Claude Code, run:
 The first time you start a health conversation, the agent automatically creates your context files at
 `~/.claude/over-50s-health-advisor/context/`.
 
+## Uninstall
+
+Inside Claude Code, run:
+
+```text
+/plugin uninstall over-50s-health@ali5ter
+```
+
+This removes the plugin and agent. Your personal context files are **not** removed. To delete them:
+
+```bash
+rm -rf ~/.claude/over-50s-health-advisor
+```
+
 ## Migrating from v2.x
 
 If you previously installed via `./install.sh`, run the migration script from this repo:

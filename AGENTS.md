@@ -158,7 +158,7 @@ The plugin framework (`.claude-plugin/plugin.json`, `/plugin install`) has been 
 
 ## Open Questions / Decisions Needed
 
-- Optional: Create uninstall guidance for plugin removal
+None.
 
 ## Publishing Updates
 
