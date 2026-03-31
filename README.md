@@ -88,6 +88,21 @@ first conversation.
 4. Use the agent from any directory in Claude Code. The agent will read and update these context files automatically.
 5. Keep the "Last updated" dates accurate in each file.
 
+## Invoking the Agent
+
+The health advisor agent is invoked automatically when you ask a health-related question in Claude Code. You can
+also target it directly using the `--agent` flag:
+
+```bash
+claude --agent over-50s-health:advisor
+```
+
+This sets the agent as the preferred delegate for the session. Claude Code routes health and wellness queries to it
+automatically; for anything else, the default assistant responds.
+
+Alternatively, just start Claude Code normally and ask a health question — the agent will activate based on your
+query.
+
 ## Starting a Conversation
 
 When you start a session, the agent automatically reads your context files and greets you with a brief summary of

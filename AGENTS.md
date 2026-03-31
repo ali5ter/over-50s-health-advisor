@@ -93,6 +93,20 @@ The plugin framework (`.claude-plugin/plugin.json`, `/plugin install`) has been 
 
 ## Recent Changes
 
+### 2026-03-30: Hardening and template externalisation (v3.2.0)
+
+- Added `permissionMode: acceptEdits`, `maxTurns: 40`, `disallowedTools` to agent frontmatter (#3, #4, #8)
+- Added `minCliVersion: "2.0.73"` to `plugin.json` (#6)
+- Added `Stop` hook for automatic session-end note to `SESSION_NOTES.md` (#5)
+- Strengthened agent description with implicit query triggers (#10)
+- Added context budget management guidance to agent body (#12)
+- Externalised inline templates; agent reads from `~/.claude/over-50s-health-advisor/templates/` (#2)
+- Added `SessionStart` hook and `hooks-handlers/sync-templates.sh` to sync templates from plugin cache
+- Upgraded agent model to `opus` for higher reasoning quality (#11)
+- Evaluated and declined native `memory` field; retained context-file system (#7)
+- Removed `initialPrompt` (not a valid frontmatter field); replaced with `## Session start` body instruction
+- Updated marketplace entry in `ali5ter/claude-plugins` to reference v3.2.0
+
 ### 2026-03-18: Rename to domain:role convention (v3.1.0)
 
 - Plugin name: `over-50s-health-advisor` → `over-50s-health`
@@ -138,13 +152,12 @@ The plugin framework (`.claude-plugin/plugin.json`, `/plugin install`) has been 
 
 ## Current Status
 
-- **Phase**: Complete (v3.0 plugin framework migration finished)
+- **Phase**: Complete (v3.2.0 hardening and template externalisation finished)
 - **In Use**: Agent actively being used for personal health guidance
 - **Production Ready**: Plugin-based distribution ready for public release
 
 ## Open Questions / Decisions Needed
 
-- Consider tagging v3.0.0 release after validating plugin install flow
 - Optional: Create uninstall guidance for plugin removal
 
 ## Publishing Updates
