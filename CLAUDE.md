@@ -2,51 +2,10 @@
 
 **Last updated**: 2026-03-30
 
-## Issue Backlog — Implementation Order
+## Issue Backlog — ✅ Complete (2026-03-30)
 
-Issues were generated from a deep review against Claude Code sub-agent and skill best practices (2026-03-30).
-Full issue list: <https://github.com/ali5ter/over-50s-health-advisor/issues>
-
-### Group 1 — Auto-merge (safe, self-contained fixes)
-
-These can be implemented and merged without review. Each is a single-file change with clear acceptance criteria.
-
-| # | Issue | Rationale |
-|---|---|---|
-| [#3](https://github.com/ali5ter/over-50s-health-advisor/issues/3) | Add `permissionMode: acceptEdits` | One-line frontmatter change; well-specified behaviour |
-| [#4](https://github.com/ali5ter/over-50s-health-advisor/issues/4) | Add `maxTurns` safeguard | One-line frontmatter change; no functional risk |
-| [#6](https://github.com/ali5ter/over-50s-health-advisor/issues/6) | Add `minCliVersion` to plugin manifest | One-field JSON change; purely additive |
-| [#8](https://github.com/ali5ter/over-50s-health-advisor/issues/8) | Add `disallowedTools` to frontmatter | Additive security constraint; no feature change |
-
-### Group 2 — Review before merging (agent behaviour changes)
-
-These change how the agent behaves and warrant a quick review before merging.
-
-| # | Issue | Rationale |
-|---|---|---|
-| [#5](https://github.com/ali5ter/over-50s-health-advisor/issues/5) | Add `Stop` hook for session auto-save | New behaviour on exit; needs validation it fires correctly |
-| [#9](https://github.com/ali5ter/over-50s-health-advisor/issues/9) | Add `initialPrompt` for warm first turn | Changes first-turn UX; needs testing with populated + empty context |
-| [#10](https://github.com/ali5ter/over-50s-health-advisor/issues/10) | Strengthen description with implicit query examples | Affects automatic delegation; test trigger fidelity |
-| [#12](https://github.com/ali5ter/over-50s-health-advisor/issues/12) | Add context budget management guidance | New agent responsibility; validate pruning behaviour |
-
-### Group 3 — Review before merging (structural changes)
-
-These require more work and touch multiple files.
-
-| # | Issue | Rationale |
-|---|---|---|
-| [#1](https://github.com/ali5ter/over-50s-health-advisor/issues/1) | Rewrite TESTING.md for v3.x | Full rewrite; confirm test coverage is complete |
-| [#2](https://github.com/ali5ter/over-50s-health-advisor/issues/2) | Externalise inline templates from agent prompt | Requires asset structure decision + first-run path change |
-| [#11](https://github.com/ali5ter/over-50s-health-advisor/issues/11) | Document model selection; evaluate opus | Decision needed before implementation |
-
-### Group 4 — Investigate before implementing
-
-| # | Issue | Rationale |
-|---|---|---|
-| [#7](https://github.com/ali5ter/over-50s-health-advisor/issues/7) | Evaluate native `memory` field | Architecture decision; may affect Groups 2 and 3 above |
-
-**Recommended sequence:** Group 1 → Group 2 → Group 3 → Group 4 (or Group 4 first if the memory decision
-affects how Group 2/3 are implemented).
+All 15 issues across 4 groups resolved and merged into main. Full issue list:
+<https://github.com/ali5ter/over-50s-health-advisor/issues>
 
 ---
 
@@ -56,33 +15,39 @@ A Claude Code Agent that provides evidence-based, age-appropriate health guidanc
 fitness, nutrition, metabolic health, mental health, sleep, and longevity with mandatory citations and safety
 boundaries.
 
-## Current Architecture (v3.0)
+## Current Architecture (v3.2.0)
 
-**Claude Code plugin framework** (implemented 2026-03-03):
+**Claude Code plugin framework**:
 
 ```text
 Install via Claude Code:
   /plugin marketplace add ali5ter/claude-plugins
   /plugin install over-50s-health@ali5ter
 
+Invoke:
+  claude --agent over-50s-health:advisor
+  (or just ask a health question — agent triggers automatically)
+
 Context files auto-created on first run at:
 ~/.claude/over-50s-health-advisor/
-└── context/                           # User's personal health context
-    ├── INITIAL_USER_INFORMATION.md
-    ├── CLIENT_HEALTH_CONTEXT.md
-    ├── CLIENT_PREFERENCES.md
-    ├── SESSION_NOTES.md
-    └── SOURCES.md
+├── context/                           # User's personal health context
+│   ├── INITIAL_USER_INFORMATION.md
+│   ├── CLIENT_HEALTH_CONTEXT.md
+│   ├── CLIENT_PREFERENCES.md
+│   ├── SESSION_NOTES.md
+│   └── SOURCES.md
+└── templates/                         # Synced from plugin cache at SessionStart
 ```
 
 **Key features**:
 
 - Install from anywhere via `/plugin` commands — no cloning required
-- Agent self-initializes context files on first run
-- Works from any directory
+- `SessionStart` hook syncs templates from plugin cache to stable user path
+- Agent self-initializes context files on first run from synced templates
+- `Stop` hook appends dated session summary to `SESSION_NOTES.md` automatically
+- Works from any directory; runs on Claude Opus 4.6
 - Privacy-preserving local storage
-- Evidence-based with mandatory citations
-- Clear safety boundaries and medical disclaimers
+- Evidence-based with mandatory citations and safety boundaries
 
 ## Repository Structure
 
@@ -90,6 +55,10 @@ Context files auto-created on first run at:
 agents/advisor.md                        # Agent definition (source)
 .claude-plugin/
   plugin.json                           # Plugin manifest
+hooks/
+  hooks.json                            # SessionStart hook (template sync)
+hooks-handlers/
+  sync-templates.sh                     # Copies templates from plugin cache
 context/
   templates/                            # Context file templates (reference)
     INITIAL_USER_INFORMATION.md
@@ -171,31 +140,29 @@ LICENSE                                 # MIT License
    - 🔄 Verify evidence sources are credible (ongoing)
    - 🔄 Test context budget management (ongoing)
 
-### 🔄 In Progress
+### ✅ Completed (v3.2.0 — 2026-03-30)
 
-**Real-world validation** (2026-01-31 onwards):
+- Agent hardening: `permissionMode`, `maxTurns`, `disallowedTools`, `minCliVersion`
+- `Stop` hook for automatic session-end notes
+- Strengthened description for implicit query delegation
+- Context budget management guidance in agent body
+- Templates externalised from agent body; synced via `SessionStart` hook
+- Model upgraded to Claude Opus 4.6
+- Native `memory` field evaluated and declined
+- `initialPrompt` removed (invalid field); replaced with `## Session start` instruction
+- v3.2.0 GitHub release tagged; marketplace updated
+- Uninstall guidance added to README
 
-- Agent actively being used for weekly health check-ins during 4-week UK travel (Feb 19 – Mar 16, 2026)
-- Context files updated each session — SESSION_NOTES.md and CLIENT_HEALTH_CONTEXT.md are the primary
-  living documents
-- Health recommendations (magnesium, alcohol reduction, evening protocol) have measurable outcomes tracked
-  week-over-week via Oura ring — deep sleep improved from 47 min baseline to 71 min in UK Week 3
-- Context budget management functioning; SESSION_NOTES accumulating but within budget
-- Obsidian Health Progress Log created (Mar 14, 2026) to maintain a structured history of weekly check-ins
+### 🔄 Ongoing
 
-### 📋 Next Steps (Optional Enhancements)
+- Real-world usage for personal health guidance (active since 2026-01-31)
+- Session notes accumulating in `~/.claude/over-50s-health-advisor/context/SESSION_NOTES.md`
+- Oura ring sleep tracking correlating with agent recommendations
 
-1. **Documentation & Release**
-   - [ ] Create migration guide for existing users
-   - [ ] Create uninstall script
-   - [ ] Add version tagging (v2.0.0)
-   - [ ] Consider public release after extended personal usage
+### 📋 Next Steps (Optional)
 
-2. **Long-term Refinements**
-   - [ ] Archive strategy for session notes
-   - [ ] Context archival automation
-   - [ ] Enhanced citation formatting
-   - [ ] Additional safety checks based on usage experience
+- [ ] Archive strategy for long-running `SESSION_NOTES.md`
+- [ ] Context archival automation
 
 ## Design Decisions
 
