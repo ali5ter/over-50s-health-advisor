@@ -30,6 +30,10 @@ context/
   README.md
 .claude-plugin/
   plugin.json                      # Plugin manifest
+hooks/
+  hooks.json                       # SessionStart hook (template sync)
+hooks-handlers/
+  sync-templates.sh                # Copies templates from plugin cache to ~/.claude/over-50s-health-advisor/templates/
 migrate                            # Migration script for v2.x users
 README.md
 LICENSE
