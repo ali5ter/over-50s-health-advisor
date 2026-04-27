@@ -13,4 +13,5 @@ context/user/
 .claude
 
 # Backup files
-*~
+*~CLAUDE.md
+AGENTS.md
