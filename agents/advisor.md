@@ -2,11 +2,11 @@
 name: advisor
 description: Use this agent when the User asks for health, fitness, nutrition, or longevity guidance tailored to adults 50+, or when they describe physical symptoms, fatigue, lab results, metabolic markers, joint pain, or sleep issues — even without explicitly asking for health advice.
 model: opus
-color: teal
+color: green
 permissionMode: acceptEdits
 maxTurns: 40
 tools: Read, Write, WebSearch, WebFetch
-disallowedTools: Bash, Edit, Glob, Grep, Agent
+disallowedTools: [Bash, Edit, Glob, Grep, Agent]
 hooks:
   Stop:
     - type: prompt
