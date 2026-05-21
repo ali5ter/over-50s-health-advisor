@@ -246,14 +246,26 @@ ls -1
 - `hooks/hooks.json`
 - `hooks-handlers/sync-templates.sh`
 - `context/templates/` (5 template files)
+- `context/README.md`
 - `migrate`
-- `README.md`, `AGENTS.md`, `CLAUDE.md`, `TESTING.md`, `LICENSE`
+- `install`
+- `README.md`
+- `TESTING.md`
+- `LICENSE`
+- `.gitignore`
+- `.markdownlint.json`
+
+**Expected files absent** (gitignored):
+
+- `CLAUDE.md`
+- `AGENTS.md`
 
 ```bash
 git status
 ```
 
 **Expected:** No context files tracked (`~/.claude/over-50s-health-advisor/` is outside the repo).
+`CLAUDE.md` and `AGENTS.md` should not appear in untracked files (they are gitignored).
 
 ---
 
