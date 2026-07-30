@@ -11,6 +11,8 @@ Last updated: 2026-01-23
 
 ## Metrics (most recent)
 
+Full history lives in `METRICS_LOG.csv`; keep only current snapshot values here for a quick glance.
+
 - Weight:
 - Waist:
 - Blood pressure:
