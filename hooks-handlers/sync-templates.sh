@@ -19,6 +19,7 @@ mkdir -p "${dest}"
 
 if [[ -d "${src}" ]]; then
     cp "${src}"/*.md "${dest}/" 2>/dev/null || true
+    cp "${src}"/*.csv "${dest}/" 2>/dev/null || true
 fi
 
 exit 0
