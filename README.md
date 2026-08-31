@@ -11,6 +11,8 @@ professional.
 - Local context management via Markdown files
 - Install via Claude Code plugin system (`/plugin install over-50s-health@ali5ter`)
 - Automatic context file creation on first run
+- Optional integration with [Personal Health Portal](https://github.com/ali5ter/personal-health-portal) — posts
+  session Insights back after a notable change (see below)
 
 ## Repository structure
 
@@ -112,6 +114,25 @@ first conversation.
 6. Ask for a "trend summary" or "how have I done this year" and the agent will read `METRICS_LOG.csv` — a
    structured, append-only record of every metric it has logged — instead of re-reading a year of session
    notes. See `context/README.md` for details on `METRICS_LOG.csv` and `SESSION_NOTES_ARCHIVE.md`.
+
+## Personal Health Portal integration (optional)
+
+The agent can post an Insight back to [Personal Health Portal](https://github.com/ali5ter/personal-health-portal)
+after a session that surfaces something genuinely new or notable — it then appears in Portal's Dashboard Weekly
+report lens automatically.
+
+This is entirely optional and gracefully skipped when not configured. To enable it, create
+`~/.claude/over-50s-health-advisor/.env` (**not** tracked by this repo — it lives alongside your personal context
+files, never committed) with:
+
+```text
+PORTAL_URL=https://your-portal-deployment.example.com
+INSIGHTS_TOKEN=<a token created from Portal Settings' Connected sources section>
+```
+
+Both values must be present or the `Stop` hook skips this step silently. The agent uses its own `Bash` tool to
+`curl` the request — no separate script or LaunchAgent is needed for this direction, unlike the read-side sync
+Portal itself runs on its schedule.
 
 ## Invoking the Agent
 
