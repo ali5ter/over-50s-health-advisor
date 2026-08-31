@@ -38,6 +38,7 @@ hooks/
   hooks.json                       # SessionStart hook (template sync)
 hooks-handlers/
   sync-templates.sh                # Copies templates from plugin cache to ~/.claude/over-50s-health-advisor/templates/
+  guard-bash-scope.sh              # Agent-scoped PreToolUse hook: scopes the advisor's Bash access
 migrate                            # Migration script for v2.x users
 README.md
 LICENSE
@@ -133,6 +134,16 @@ INSIGHTS_TOKEN=<a token created from Portal Settings' Connected sources section>
 Both values must be present or the `Stop` hook skips this step silently. The agent uses its own `Bash` tool to
 `curl` the request — no separate script or LaunchAgent is needed for this direction, unlike the read-side sync
 Portal itself runs on its schedule.
+
+## Bash access
+
+The agent has `Bash` for local analysis (reading `METRICS_LOG.csv`, running your own health export scripts) and
+for the Portal integration above. A `PreToolUse` hook (`hooks-handlers/guard-bash-scope.sh`) scopes what it can
+actually run: destructive commands (`rm`, `mv`, `sudo`, `chmod`, `chown`, `dd`, force-pushes) and generic network
+egress (`wget`, `nc`) are denied outright, and `curl` is allowed only for the exact Personal Health Portal
+insights POST described above — everything else it denies or leaves to the normal permission prompt. This hook
+is scoped to the agent itself (via its own frontmatter, not your global settings), so it has no effect outside
+an active advisor session.
 
 ## Invoking the Agent
 
