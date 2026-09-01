@@ -138,12 +138,16 @@ Portal itself runs on its schedule.
 ## Bash access
 
 The agent has `Bash` for local analysis (reading `METRICS_LOG.csv`, running your own health export scripts) and
-for the Portal integration above. A `PreToolUse` hook (`hooks-handlers/guard-bash-scope.sh`) scopes what it can
-actually run: destructive commands (`rm`, `mv`, `sudo`, `chmod`, `chown`, `dd`, force-pushes) and generic network
-egress (`wget`, `nc`) are denied outright, and `curl` is allowed only for the exact Personal Health Portal
-insights POST described above — everything else it denies or leaves to the normal permission prompt. This hook
-is scoped to the agent itself (via its own frontmatter, not your global settings), so it has no effect outside
-an active advisor session.
+for the Portal integration above. A `PreToolUse` hook (`hooks-handlers/guard-bash-scope.sh`, registered in
+`hooks/hooks.json`) scopes what it can actually run: destructive commands (`rm`, `mv`, `sudo`, `chmod`, `chown`,
+`dd`, force-pushes) and generic network egress (`wget`, `nc`) are denied outright, and `curl` is allowed only for
+the exact Personal Health Portal insights POST described above — everything else it denies or leaves to the
+normal permission prompt.
+
+Claude Code silently ignores `hooks:` set in a plugin agent's own frontmatter, so this hook (and the `Stop` hook
+above) are registered in the plugin's `hooks/hooks.json` instead, which applies plugin-wide rather than to one
+agent. Both hooks self-scope by checking the `agent_type` field Claude Code passes them and are a no-op outside
+an active `over-50s-health:advisor` session — they have no effect on your other Claude Code sessions.
 
 ## Invoking the Agent
 

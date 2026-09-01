@@ -17,14 +17,18 @@
 # not a hard security boundary against an adversarial actor.
 #
 # Author: Alister Lewis-Bowen <alister@lewis-bowen.org>
-# Version: 1.0.0
-# Date: 2026-08-31
+# Version: 1.1.0
+# Date: 2026-09-01
 # License: MIT
 #
-# Usage: Registered as a PreToolUse hook on Bash in agents/advisor.md frontmatter, scoped to run
-#   only while that agent is active. Not intended to be run standalone, but can be exercised
-#   with:
-#     echo '{"tool_input":{"command":"rm -rf ~/.claude/over-50s-health-advisor"}}' \
+# Usage: Registered as a PreToolUse hook on Bash in the plugin's hooks/hooks.json, which is
+#   the only place a plugin can attach hooks — Claude Code silently ignores a `hooks:` key
+#   in plugin agent frontmatter (confirmed 2026-09-01; see agents/advisor.md history for the
+#   prior, non-functional placement). Because hooks/hooks.json applies plugin-wide rather than
+#   per-agent, this script self-scopes by checking `agent_type` in its own input and is a no-op
+#   for every session except an active over-50s-health:advisor one. Not intended to be run
+#   standalone, but can be exercised with:
+#     echo '{"agent_type":"over-50s-health:advisor","tool_input":{"command":"rm -rf ~/.claude/over-50s-health-advisor"}}' \
 #       | ./guard-bash-scope.sh
 #
 # Dependencies: bash 4.0+, jq
@@ -34,9 +38,18 @@
 
 set -euo pipefail
 
+readonly ADVISOR_AGENT_TYPE="over-50s-health:advisor"
+
 command -v jq >/dev/null 2>&1 || exit 0
 
 input="$(cat)"
+
+# hooks/hooks.json has no way to scope a hook to one agent declaratively (no matcher/if support
+# for agent identity), so every other session on this machine also invokes this script on every
+# Bash call. Stay silent immediately for anything that isn't the advisor agent.
+agent_type="$(jq -r '.agent_type // empty' <<<"$input")"
+[[ "$agent_type" == "$ADVISOR_AGENT_TYPE" ]] || exit 0
+
 command_str="$(jq -r '.tool_input.command // empty' <<<"$input")"
 [[ -n "$command_str" ]] || exit 0
 
