@@ -6,19 +6,13 @@
 # also has broad Write access to a directory holding a year of personal health history. This
 # hook is the boundary that stops that combination from becoming a way to delete, relocate, or
 # transmit that data: destructive commands and generic network egress (curl/wget/nc) are denied
-# outright, except the one curl shape the Personal Health Portal integration needs (see the
-# README's "Personal Health Portal integration" section), which is allowed only when the command
-# matches that shape exactly. Read-only analysis tools not already in Claude Code's built-in
-# read-only set, the health export scripts, and gh issue/pr filing are allowed so they don't
-# prompt on every session.
-#
-# The curl allow rule trusts that $PORTAL_URL wasn't reassigned earlier in this session's shell
-# — it isn't re-resolved from .env at match time. That is an accepted gap for a single-user tool,
-# not a hard security boundary against an adversarial actor.
+# outright. Read-only analysis tools not already in Claude Code's built-in read-only set, the
+# health export scripts, and gh issue/pr filing are allowed so they don't prompt on every
+# session.
 #
 # Author: Alister Lewis-Bowen <alister@lewis-bowen.org>
-# Version: 1.1.0
-# Date: 2026-09-01
+# Version: 1.2.0
+# Date: 2026-09-07
 # License: MIT
 #
 # Usage: Registered as a PreToolUse hook on Bash in the plugin's hooks/hooks.json, which is
@@ -73,19 +67,8 @@ if grep -qE '(^|[;&|]|\s)git\s+push\s+.*--force' <<<"$command_str"; then
 fi
 
 # Generic network egress: the difference between reading health history and transmitting it.
-if grep -qE '(^|[;&|]|\s)(wget|nc|ncat|netcat)(\s|$)' <<<"$command_str"; then
+if grep -qE '(^|[;&|]|\s)(curl|wget|nc|ncat|netcat)(\s|$)' <<<"$command_str"; then
     decide "deny" "Network egress via this command is denied for the health advisor agent."
-fi
-
-if grep -qE '(^|[;&|]|\s)curl(\s|$)' <<<"$command_str"; then
-    # Only the exact Personal Health Portal insights POST is allowed. Anything else — extra
-    # flags, a different path, a hardcoded host, or trailing chained commands — is denied.
-    # shellcheck disable=SC2016  # single-quoted on purpose — the regex matches literal $ characters
-    portal_pattern='^curl -s -X POST "\$PORTAL_URL/api/insights" -H "Authorization: Bearer \$INSIGHTS_TOKEN" -H "Content-Type: application/json" -d @[^[:space:]]+$'
-    if grep -qE "$portal_pattern" <<<"$command_str"; then
-        decide "allow" "Matches the Personal Health Portal insights POST shape."
-    fi
-    decide "deny" "curl is denied for the health advisor agent except the exact Personal Health Portal insights POST."
 fi
 
 # Read-only analysis tools not already in Claude Code's built-in read-only set (which already

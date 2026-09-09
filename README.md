@@ -11,8 +11,6 @@ professional.
 - Local context management via Markdown files
 - Install via Claude Code plugin system (`/plugin install over-50s-health@ali5ter`)
 - Automatic context file creation on first run
-- Optional integration with [Personal Health Portal](https://github.com/ali5ter/personal-health-portal) — posts
-  session Insights back after a notable change (see below)
 
 ## Repository structure
 
@@ -116,38 +114,18 @@ first conversation.
    structured, append-only record of every metric it has logged — instead of re-reading a year of session
    notes. See `context/README.md` for details on `METRICS_LOG.csv` and `SESSION_NOTES_ARCHIVE.md`.
 
-## Personal Health Portal integration (optional)
-
-The agent can post an Insight back to [Personal Health Portal](https://github.com/ali5ter/personal-health-portal)
-after a session that surfaces something genuinely new or notable — it then appears in Portal's Dashboard Weekly
-report lens automatically.
-
-This is entirely optional and gracefully skipped when not configured. To enable it, create
-`~/.claude/over-50s-health-advisor/.env` (**not** tracked by this repo — it lives alongside your personal context
-files, never committed) with:
-
-```text
-PORTAL_URL=https://your-portal-deployment.example.com
-INSIGHTS_TOKEN=<a token created from Portal Settings' Connected sources section>
-```
-
-Both values must be present or the `Stop` hook skips this step silently. The agent uses its own `Bash` tool to
-`curl` the request — no separate script or LaunchAgent is needed for this direction, unlike the read-side sync
-Portal itself runs on its schedule.
-
 ## Bash access
 
-The agent has `Bash` for local analysis (reading `METRICS_LOG.csv`, running your own health export scripts) and
-for the Portal integration above. A `PreToolUse` hook (`hooks-handlers/guard-bash-scope.sh`, registered in
-`hooks/hooks.json`) scopes what it can actually run: destructive commands (`rm`, `mv`, `sudo`, `chmod`, `chown`,
-`dd`, force-pushes) and generic network egress (`wget`, `nc`) are denied outright, and `curl` is allowed only for
-the exact Personal Health Portal insights POST described above — everything else it denies or leaves to the
-normal permission prompt.
+The agent has `Bash` for local analysis: reading `METRICS_LOG.csv` and running your own health export scripts. A
+`PreToolUse` hook (`hooks-handlers/guard-bash-scope.sh`, registered in `hooks/hooks.json`) scopes what it can
+actually run: destructive commands (`rm`, `mv`, `sudo`, `chmod`, `chown`, `dd`, force-pushes) and network egress
+(`curl`, `wget`, `nc`) are denied outright — everything else it allows outright or leaves to the normal permission
+prompt.
 
-Claude Code silently ignores `hooks:` set in a plugin agent's own frontmatter, so this hook (and the `Stop` hook
-above) are registered in the plugin's `hooks/hooks.json` instead, which applies plugin-wide rather than to one
-agent. Both hooks self-scope by checking the `agent_type` field Claude Code passes them and are a no-op outside
-an active `over-50s-health:advisor` session — they have no effect on your other Claude Code sessions.
+Claude Code silently ignores `hooks:` set in a plugin agent's own frontmatter, so this hook is registered in the
+plugin's `hooks/hooks.json` instead, which applies plugin-wide rather than to one agent. It self-scopes by
+checking the `agent_type` field Claude Code passes it and is a no-op outside an active
+`over-50s-health:advisor` session — it has no effect on your other Claude Code sessions.
 
 ## Invoking the Agent
 

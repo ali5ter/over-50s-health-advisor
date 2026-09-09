@@ -1,5 +1,5 @@
 {
-  "description": "Sync context file templates before each session, scope the advisor's Bash access, and log session notes/metrics/Portal Insights on exit. All PreToolUse/Stop hooks self-scope to agent_type == \"over-50s-health:advisor\" in bash (never in a prompt) and no-op for every other session, because Claude Code plugin hooks apply plugin-wide with no declarative per-agent matcher.",
+  "description": "Sync context file templates before each session and scope the advisor's Bash access. Both hooks self-scope to agent_type == \"over-50s-health:advisor\" in bash (never in a prompt) and no-op for every other session, because Claude Code plugin hooks apply plugin-wide with no declarative per-agent matcher.",
   "hooks": {
     "SessionStart": [
       {
@@ -18,16 +18,6 @@
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks-handlers/guard-bash-scope.sh\""
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks-handlers/stop-session-log.sh\""
           }
         ]
       }
