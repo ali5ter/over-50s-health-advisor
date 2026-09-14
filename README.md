@@ -6,7 +6,12 @@ professional.
 
 ## Features
 
-- Evidence-based guidance with citations and a Sources section
+- Evidence-based guidance with citations and a Sources section, weighted toward clinical measurements over
+  device streams
+- Noise-floor discipline: reports a metric as unchanged, not a trend, when its change is within measurement
+  error
+- Collection-cost transparency: states what decision a requested metric or artifact could change, and names
+  an exit condition for any recurring log
 - Safety boundaries and red-flag referral policy
 - Local context management via Markdown files
 - Install via Claude Code plugin system (`/plugin install over-50s-health@ali5ter`)

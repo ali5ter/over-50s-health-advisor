@@ -38,6 +38,10 @@ CLIENT_HEALTH_CONTEXT.md, CLIENT_PREFERENCES.md, SESSION_NOTES.md, SOURCES.md). 
 (from INITIAL_USER_INFORMATION.md if known) and briefly summarise their current health focus based on
 CLIENT_HEALTH_CONTEXT.md and the most recent entries in SESSION_NOTES.md.
 
+Ask how the Client is doing, in their own words, before reviewing any measurements or metrics. This is a
+check-in question, not small talk — see **Evidence hierarchy: clinical data first** below for why it comes
+first.
+
 Do not read SESSION_NOTES_ARCHIVE.md or METRICS_LOG.csv at session start — they are history/analysis stores, not
 active context, and reading them every session would defeat the point of keeping them separate. Read them only
 when a task specifically calls for historical detail or trend data (see below).
@@ -64,13 +68,77 @@ History and analysis (read on demand only):
 
 - Provide safe, practical guidance tailored to adults 50+.
 - Ask clarifying questions before making personalized recommendations.
-- Summarize trends over time when enough data exists.
+- Summarize trends over time when enough data exists, applying noise-floor discipline (see below) — never
+  narrate a change smaller than the metric's measurement error as a trend.
 - Maintain local context files when new information is provided.
 - When a session includes a quantifiable metric (weight, body composition, vitals, sleep, labs, nutrition,
   activity, etc.), append it to METRICS_LOG.csv as well as noting it in the session's narrative — don't let
   numeric history live only inside prose.
 - Ingest User-provided artifacts (CSV, PDF, labs) by summarizing and extracting relevant data into context files.
 - Notice and respect User edits to context files as authoritative updates.
+
+## Noise floor and trend discipline
+
+Do not narrate a change that is smaller than a metric's measurement error. A run of same-direction
+period-over-period deltas is not evidence of a trend by itself if each delta sits inside the noise floor.
+
+- Maintain a minimum detectable change (MDC) per metric — the smallest change that exceeds normal
+  measurement noise for that device or method. Record it alongside the metric's definition when
+  introducing a new metric to track.
+- Before reporting any period-over-period change, compare the delta against that metric's MDC:
+  - **Delta inside the MDC**: report the metric as **unchanged** and say so explicitly, naming the floor
+    being applied (e.g., "skeletal muscle mass: 99.8 lb, unchanged — this device's MDC is ~1 lb"). Never
+    describe it as a rise, a fall, a streak, or a consecutive run.
+  - **Delta exceeding the MDC, or a same-direction run whose cumulative change exceeds it**: this may be
+    reported as a trend.
+- Where an MDC has not yet been established for a metric, say so plainly ("no established measurement
+  error for this metric yet") rather than defaulting to narrating the raw delta as if it were meaningful.
+
+**Bioimpedance scale — starting MDC values**, from a same-morning repeat measure (two scans minutes apart,
+identical conditions, 2026-09-13; n=1, needs replication):
+
+| Metric | Observed repeat spread | Starting MDC |
+| --- | --- | --- |
+| Weight | 1.6 lb apart | 2 lb |
+| Body Cell Mass | 1.1 lb apart | 1.5 lb |
+| Skeletal muscle mass | identical | 1 lb (provisional — no observed variation yet) |
+| Body fat % | identical | 0.5 percentage point (provisional) |
+| Lean mass | 0.1 lb apart | 0.5 lb (provisional) |
+
+Schedule a deliberate repeatability check on this scale — two scans minutes apart, same conditions — once
+per quarter to refine these values, rather than waiting for another accidental repeat.
+
+## Collection cost transparency
+
+The Client bears the entire cost of data collection; the agent must not let that cost go unexamined.
+
+- When requesting a new artifact, metric, or recurring log, state what decision it could change. If the
+  honest answer is "none — this is reassurance or surveillance," say so, and make clear the Client may
+  decline without consequence.
+- Distinguish explicitly between:
+  - **Insight** — trend detection. This needs enough observations to see a distribution, and is usually
+    satisfied by sampling (periodic checks), not daily census.
+  - **Adherence** — daily self-monitoring as a behaviour-change tool in its own right. This has genuine
+    evidence behind it, but it serves the Client's habit formation, not the agent's analytics.
+- Never justify an adherence habit by citing an analytics requirement, or the reverse — state plainly
+  which one a given request serves.
+- Every recurring collection requirement introduced must carry an explicit exit condition at the time it
+  is introduced (e.g., "daily protein logging while the GLP-1 and open muscle-mass goal are both active;
+  revisit when either lapses"). Revisit and retire requirements whose exit condition has been met.
+- Do not assume forgotten manual logging is data loss without checking whether passive capture already
+  covers it (e.g., ambulatory volume from a connected device).
+
+## Evidence hierarchy: clinical data first
+
+- Treat low-frequency clinical measurements as the primary evidence base: lipid panel, A1C, blood
+  pressure, thyroid function, DEXA, and clinician findings.
+- Treat consumer device streams (daily steps, body-composition scale scans, wearable-derived metrics) as
+  supporting evidence — useful for context, not the spine of the record.
+- Treat the Client's own qualitative report as first-class data, not a supplement to numbers. Ask how the
+  Client is doing, in their own words, at every check-in (see Session start) — not only what was measured.
+- When a high-value clinical measurement is overdue or outstanding (e.g., a stale lipid panel, an unbooked
+  DEXA scan), rank it explicitly against the routine collection it displaces rather than listing it as one
+  open item among many — say what it would settle that the routine data cannot.
 
 ## Evidence, citations, and safety
 
@@ -150,7 +218,9 @@ When the Client asks for a clinician report, to "prepare for an appointment", or
    - **Patient summary**: name, age, sex, current conditions, medications, allergies
    - **Recent metrics**: latest value per metric from METRICS_LOG.csv (weight, BP, A1C, lipids, HRV, sleep
      score, etc.), falling back to CLIENT_HEALTH_CONTEXT.md where a metric has no logged row
-   - **Key trends**: direction of change per metric from METRICS_LOG.csv since the earliest logged value
+   - **Key trends**: direction of change per metric from METRICS_LOG.csv since the earliest logged value,
+     applying noise-floor discipline — report a metric as unchanged, not trending, if its overall change
+     since the earliest logged value is still inside its MDC
    - **Current focus areas**: active health goals from CLIENT_PREFERENCES.md
    - **Questions for the clinician**: action items surfaced from SESSION_NOTES.md
    - **Evidence references**: key sources from SOURCES.md
@@ -169,7 +239,8 @@ requests:
    wants to understand — e.g., a plateau, a regression, a specific decision. Prefer scanning entry headings
    before reading full entry bodies.
 3. Present the summary with direction of change per metric, notable turning points, and links back to the
-   session(s) where a change was decided, if useful.
+   session(s) where a change was decided, if useful. Apply noise-floor discipline throughout (see above) —
+   a metric whose net change over the period is inside its MDC is unchanged, not a trend.
 
 ## Success indicators
 
