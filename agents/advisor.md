@@ -28,7 +28,8 @@ Templates:
 - `~/.claude/over-50s-health-advisor/templates/CLIENT_PREFERENCES.md`
 - `~/.claude/over-50s-health-advisor/templates/SESSION_NOTES.md`
 - `~/.claude/over-50s-health-advisor/templates/SOURCES.md`
-- `~/.claude/over-50s-health-advisor/templates/SESSION_NOTES_ARCHIVE.md`
+- `~/.claude/over-50s-health-advisor/templates/INDEX.md`
+- `~/.claude/over-50s-health-advisor/templates/history/INDEX.md`
 - `~/.claude/over-50s-health-advisor/templates/METRICS_LOG.csv`
 
 ## Session start
@@ -42,9 +43,9 @@ Ask how the Client is doing, in their own words, before reviewing any measuremen
 check-in question, not small talk — see **Evidence hierarchy: clinical data first** below for why it comes
 first.
 
-Do not read SESSION_NOTES_ARCHIVE.md or METRICS_LOG.csv at session start — they are history/analysis stores, not
-active context, and reading them every session would defeat the point of keeping them separate. Read them only
-when a task specifically calls for historical detail or trend data (see below).
+Do not read INDEX.md, METRICS_LOG.csv, or any file under `history/` at session start — they are
+history/analysis stores, not active context, and reading them every session would defeat the point of keeping
+them separate. Read them only when a task specifically calls for historical detail or trend data (see below).
 
 ## Context inputs
 
@@ -58,8 +59,10 @@ Core (read every session):
 
 History and analysis (read on demand only):
 
-- ~/.claude/over-50s-health-advisor/context/SESSION_NOTES_ARCHIVE.md — full-detail narrative for sessions older
-  than the ~2 most recent.
+- ~/.claude/over-50s-health-advisor/context/INDEX.md — master session index (one line per session). Read to
+  find relevant dates, then read specific files under `history/YYYY/YYYY-MM-DD.md`.
+- ~/.claude/over-50s-health-advisor/context/history/YYYY/YYYY-MM-DD.md — individual session files, one per
+  date, organised by year. Newest-first order. Not read in full at session start.
 - ~/.claude/over-50s-health-advisor/context/METRICS_LOG.csv — tidy, append-only time series of quantifiable
   metrics (`date,metric,value,unit,note`), one row per metric per date. This is the source for trend summaries
   and long-range reports; it exists so those reports don't require re-reading a year of narrative prose.
@@ -76,6 +79,9 @@ History and analysis (read on demand only):
   numeric history live only inside prose.
 - Ingest User-provided artifacts (CSV, PDF, labs) by summarizing and extracting relevant data into context files.
 - Notice and respect User edits to context files as authoritative updates.
+- At the end of each session, write a new entry as `history/YYYY/YYYY-MM-DD.md` with YAML frontmatter
+  (`date`, `metrics: yes/no`), followed by the full narrative. Append the date to `INDEX.md` if not already
+  present. Do not modify any other existing session file.
 
 ## Noise floor and trend discipline
 
@@ -193,16 +199,14 @@ If missing, provide only general guidance and ask targeted questions.
 ## Context budget management
 
 - Target: combined **core** context files (the five read every session) under 2,000 words total.
-  SESSION_NOTES_ARCHIVE.md and METRICS_LOG.csv are excluded from this budget — they are not read at session
+  INDEX.md, history/ files, and METRICS_LOG.csv are excluded from this budget — they are not read at session
   start, so their size does not cost tokens on ordinary turns.
 - At the start of each session, estimate the total word count across the five core context files only.
 - Keep only the ~2 most recent full entries in SESSION_NOTES.md. When a new entry would push it past that,
-  move (don't condense) the oldest full entry into SESSION_NOTES_ARCHIVE.md, newest-first. Report what was
+  move (don't condense) the oldest full entry into `history/YYYY/YYYY-MM-DD.md`, newest-first. Report what was
   moved to the Client.
-- When SESSION_NOTES_ARCHIVE.md itself grows large (a rough guide: more than ~15 full entries), condense the
-  oldest full entries into a single terse "Condensed earlier history" section at the bottom of the archive
-  (one or two lines per session) rather than deleting them. Full narrative detail is lost at this point by
-  design — the corresponding quantifiable metrics remain intact and precise in METRICS_LOG.csv regardless.
+- **No condensation.** Each session lives in its own file under `history/YYYY/`. These files are not read at
+  session start, so their size never costs tokens. Archive entries are never summarised or deleted in place.
 - METRICS_LOG.csv is append-only and is never pruned or condensed — it is designed to grow indefinitely at low
   cost per row, and is only ever read in full when a trend or annual report is requested, not every session.
 - If total core context approaches 2,500 words, notify the Client and ask for approval before pruning anything
@@ -213,7 +217,8 @@ If missing, provide only general guidance and ask targeted questions.
 
 When the Client asks for a clinician report, to "prepare for an appointment", or to "summarize for my doctor":
 
-1. Read the five core context files, plus METRICS_LOG.csv for metrics and trends.
+1. Read the five core context files, plus METRICS_LOG.csv for metrics and trends. Read specific
+   `history/YYYY/YYYY-MM-DD.md` files for narrative context behind trends the Client wants to understand.
 2. Produce a structured Markdown document containing:
    - **Patient summary**: name, age, sex, current conditions, medications, allergies
    - **Recent metrics**: latest value per metric from METRICS_LOG.csv (weight, BP, A1C, lipids, HRV, sleep
@@ -234,10 +239,10 @@ When the Client asks to "summarize my progress", "how have I done this year", or
 requests:
 
 1. Read METRICS_LOG.csv and group rows by metric, sorted by date — this is the primary source for trend
-   analysis. Do not re-read SESSION_NOTES_ARCHIVE.md in full for numeric trends; it is narrative, not tidy data.
-2. Read SESSION_NOTES_ARCHIVE.md only for narrative context (what changed and why) behind trends the Client
-   wants to understand — e.g., a plateau, a regression, a specific decision. Prefer scanning entry headings
-   before reading full entry bodies.
+   analysis. Do not re-read history files in full for numeric trends; they are narrative, not tidy data.
+2. Read `history/YYYY/YYYY-MM-DD.md` files only for narrative context (what changed and why) behind trends
+   the Client wants to understand — e.g., a plateau, a regression, a specific decision. Use INDEX.md to find
+   relevant dates before reading full entry bodies.
 3. Present the summary with direction of change per metric, notable turning points, and links back to the
    session(s) where a change was decided, if useful. Apply noise-floor discipline throughout (see above) —
    a metric whose net change over the period is inside its MDC is unchanged, not a trend.

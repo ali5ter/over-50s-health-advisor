@@ -1,9 +1,10 @@
 # SESSION_NOTES
 
-Active notes = the ~2 most recent entries only. When a new entry would make this more than that, move the
-oldest full entry into `SESSION_NOTES_ARCHIVE.md` (same directory, not auto-loaded) — move it, don't condense
-it in place. Quantifiable metrics (weight, vitals, sleep, labs, etc.) belong in `METRICS_LOG.csv`, not just in
-prose here.
+Active notes = the most recent ~2 entries only. Older entries move to individual files under
+`history/YYYY/` (newest-first). Quantifiable metrics go to `METRICS_LOG.csv` (append-only).
+
+When a new entry would make this more than ~2 entries, move the oldest full entry to
+`history/YYYY/YYYY-MM-DD.md` — move it, don't condense it in place.
 
 ---
 

@@ -14,7 +14,8 @@ This repository contains template files in `context/templates/`:
 - `CLIENT_PREFERENCES.md`
 - `SESSION_NOTES.md`
 - `SOURCES.md`
-- `SESSION_NOTES_ARCHIVE.md`
+- `INDEX.md`
+- `history/INDEX.md`
 - `METRICS_LOG.csv`
 
 These templates provide structure and examples but contain no real user data. When the plugin is installed, the
@@ -32,14 +33,18 @@ On the first conversation, the agent creates personal context files at:
 ├── CLIENT_PREFERENCES.md           # core — read every session
 ├── SESSION_NOTES.md                # core — read every session (last ~2 entries only)
 ├── SOURCES.md                      # core — read every session
-├── SESSION_NOTES_ARCHIVE.md        # history — read only on demand
+├── INDEX.md                        # history — read on demand only
+├── history/
+│   ├── INDEX.md                    # history — read on demand only
+│   └── YYYY/
+│       └── YYYY-MM-DD.md           # history — read on demand only
 └── METRICS_LOG.csv                 # analysis — read only on demand
 ```
 
 These files contain actual health information and are never committed to version control.
 Reinstalling or updating the plugin never touches these files. The agent checks for each file individually on
-first run, so upgrading from an older install that only has the original five files simply adds the two new
-ones alongside — nothing is renamed, moved, or rewritten.
+first run, so upgrading from an older install that only has the original files simply adds any new ones alongside
+— nothing is renamed, moved, or rewritten.
 
 ## Context File Descriptions
 
@@ -72,12 +77,8 @@ Preferences for guidance:
 
 ### SESSION_NOTES.md
 
-Chronological log of interactions:
-
-- Date-stamped session summaries
-- Key decisions or plans made
-- Progress updates
-- Questions for follow-up
+Active session notes — the ~2 most recent entries only. Older entries move to individual files under
+`history/YYYY/` when this file grows past that. Quantifiable metrics go to `METRICS_LOG.csv` (append-only).
 
 ### SOURCES.md
 
@@ -87,13 +88,19 @@ Curated list of evidence-based resources:
 - Personal research findings
 - Clinician-provided resources
 
-### SESSION_NOTES_ARCHIVE.md
+### INDEX.md
 
-Full-detail narrative for sessions older than the ~2 most recent kept in `SESSION_NOTES.md`. Not read at
-session start — only when the agent needs historical detail (e.g., a clinician report question, or "why did
-this change"). This keeps the active, every-session context small without losing any history: entries are
-moved here, not deleted. Once the archive itself grows large, its oldest entries are condensed into a short
-"Condensed earlier history" section rather than continuing to grow full-detail forever.
+Master session index — one line per session with date, topics (extracted from the session heading), and whether
+metrics were logged that day. Read to find relevant dates before reading specific session files.
+
+### history/INDEX.md
+
+Yearly index mirroring the root INDEX.md, organised by year directory.
+
+### history/YYYY/YYYY-MM-DD.md
+
+Individual session files, one per date, organised by year. YAML frontmatter includes `date` and `metrics`
+(yes/no). Full narrative follows the frontmatter. Newest-first order. Not read at session start.
 
 ### METRICS_LOG.csv
 
@@ -107,9 +114,9 @@ date,metric,value,unit,note
 ```
 
 This is the file trend and annual reports read from. It exists so that a "summarize my year" request pulls
-structured rows instead of re-parsing a year of narrative prose in `SESSION_NOTES_ARCHIVE.md`. Metric names are
-freeform (snake_case) rather than a fixed schema, since clients track different things. If a note needs a
-comma, wrap it in double quotes so the row still parses as CSV.
+structured rows instead of re-parsing a year of narrative prose. Metric names are freeform (snake_case) rather
+than a fixed schema, since clients track different things. If a note needs a comma, wrap it in double quotes so
+the row still parses as CSV.
 
 ## Required vs Optional Context
 
@@ -123,7 +130,8 @@ comma, wrap it in double quotes so the row still parses as CSV.
 - `CLIENT_HEALTH_CONTEXT.md`
 - `SESSION_NOTES.md`
 - `SOURCES.md`
-- `SESSION_NOTES_ARCHIVE.md`
+- `INDEX.md`
+- `history/YYYY/YYYY-MM-DD.md`
 - `METRICS_LOG.csv`
 
 ## Privacy and Data Management
@@ -137,15 +145,14 @@ comma, wrap it in double quotes so the row still parses as CSV.
 ## Context Budget Management
 
 The agent aims to keep the five **core** files (the ones read every session) under 2,000 words combined. The
-two history/analysis files, `SESSION_NOTES_ARCHIVE.md` and `METRICS_LOG.csv`, are deliberately excluded from
-this budget — they are only read on demand, so their size does not cost tokens on ordinary turns. The agent
+history files (`INDEX.md`, `history/` files) and the analysis file (`METRICS_LOG.csv`) are deliberately excluded
+from this budget — they are only read on demand, so their size does not cost tokens on ordinary turns. The agent
 will:
 
 - Monitor total word count across the five core files at the start of each session
-- Move (not condense) older `SESSION_NOTES.md` entries into `SESSION_NOTES_ARCHIVE.md` once more than ~2 full
-  entries have accumulated
-- Condense the archive's oldest entries into terse one-liners once it grows past ~15 full entries, since the
-  precise numbers survive independently in `METRICS_LOG.csv`
+- Keep only the ~2 most recent full entries in `SESSION_NOTES.md`
+- Move (not condense) older entries into individual files under `history/YYYY/YYYY-MM-DD.md` — never delete or
+  summarise archive entries in place
 - Never prune or condense `METRICS_LOG.csv` — it is designed to grow indefinitely at low cost per row
 - Request approval before pruning `INITIAL_USER_INFORMATION.md` or `CLIENT_PREFERENCES.md`
 
@@ -167,7 +174,7 @@ Common workflows:
 nano ~/.claude/over-50s-health-advisor/context/CLIENT_HEALTH_CONTEXT.md
 
 # Review past sessions
-cat ~/.claude/over-50s-health-advisor/context/SESSION_NOTES.md
+ls ~/.claude/over-50s-health-advisor/context/history/2026/
 
 # Update preferences
 code ~/.claude/over-50s-health-advisor/context/CLIENT_PREFERENCES.md

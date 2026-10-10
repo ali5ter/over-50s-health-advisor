@@ -20,6 +20,11 @@ mkdir -p "${dest}"
 if [[ -d "${src}" ]]; then
     cp "${src}"/*.md "${dest}/" 2>/dev/null || true
     cp "${src}"/*.csv "${dest}/" 2>/dev/null || true
+    # Sync history/ subdirectory templates
+    if [[ -d "${src}/history" ]]; then
+        mkdir -p "${dest}/history"
+        cp "${src}/history"/*.md "${dest}/history/" 2>/dev/null || true
+    fi
 fi
 
 exit 0
