@@ -18,12 +18,25 @@ dest="${HOME}/.claude/over-50s-health-advisor/templates"
 mkdir -p "${dest}"
 
 if [[ -d "${src}" ]]; then
-    cp "${src}"/*.md "${dest}/" 2>/dev/null || true
-    cp "${src}"/*.csv "${dest}/" 2>/dev/null || true
+    # Only copy files that don't already exist — never overwrite user data
+    for f in "${src}"/*.md; do
+        [[ -f "$f" ]] || continue
+        [[ -f "${dest}/$(basename "$f")" ]] && continue
+        cp "$f" "${dest}/" 2>/dev/null || true
+    done
+    for f in "${src}"/*.csv; do
+        [[ -f "$f" ]] || continue
+        [[ -f "${dest}/$(basename "$f")" ]] && continue
+        cp "$f" "${dest}/" 2>/dev/null || true
+    done
     # Sync history/ subdirectory templates
     if [[ -d "${src}/history" ]]; then
         mkdir -p "${dest}/history"
-        cp "${src}/history"/*.md "${dest}/history/" 2>/dev/null || true
+        for f in "${src}/history"/*.md; do
+            [[ -f "$f" ]] || continue
+            [[ -f "${dest}/history/$(basename "$f")" ]] && continue
+            cp "$f" "${dest}/history/" 2>/dev/null || true
+        done
     fi
 fi
 
