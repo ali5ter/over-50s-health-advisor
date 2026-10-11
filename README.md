@@ -12,6 +12,8 @@ professional.
   error
 - Collection-cost transparency: states what decision a requested metric or artifact could change, and names
   an exit condition for any recurring log
+- Optional long-term memory via [Hindsight](https://github.com/vectorize-io/hindsight) — a self-hosted recall
+  and reflection layer over your local history files
 - Safety boundaries and red-flag referral policy
 - Local context management via Markdown files
 - Install via Claude Code plugin system (`/plugin install over-50s-health@ali5ter`)
@@ -34,14 +36,19 @@ context/
     SOURCES.md
     SESSION_NOTES_ARCHIVE.md       # On-demand narrative history
     METRICS_LOG.csv                # On-demand structured metrics for trend reports
+    history/                       # Per-session history templates
+      INDEX.md
   README.md
 .claude-plugin/
   plugin.json                      # Plugin manifest
 hooks/
-  hooks.json                       # SessionStart hook (template sync)
+  hooks.json                       # SessionStart + Stop hooks
 hooks-handlers/
   sync-templates.sh                # Copies templates from plugin cache to ~/.claude/over-50s-health-advisor/templates/
   guard-bash-scope.sh              # Agent-scoped PreToolUse hook: scopes the advisor's Bash access
+  retain-session.sh                # Stop hook: persists session to Hindsight
+scripts/
+  backfill-history.sh              # One-off: ingest all history into Hindsight
 migrate                            # Migration script for v2.x users
 README.md
 LICENSE
@@ -57,8 +64,11 @@ After installation, your personal context files are stored at:
         ├── CLIENT_PREFERENCES.md         # core — read every session
         ├── SESSION_NOTES.md              # core — read every session (last ~2 entries)
         ├── SOURCES.md                    # core — read every session
-        ├── SESSION_NOTES_ARCHIVE.md      # history — read only on demand
-        └── METRICS_LOG.csv               # analysis — read only on demand
+        ├── INDEX.md                      # session index — read on demand
+        ├── history/                      # per-session history files
+        │   └── YYYY/YYYY-MM-DD.md       # one file per session
+        ├── METRICS_LOG.csv               # analysis — read on demand
+        └── _legacy/                      # pre-v4.0.0 archives (never deleted)
 ```
 
 ## Requirements
@@ -131,6 +141,83 @@ Claude Code silently ignores `hooks:` set in a plugin agent's own frontmatter, s
 plugin's `hooks/hooks.json` instead, which applies plugin-wide rather than to one agent. It self-scopes by
 checking the `agent_type` field Claude Code passes it and is a no-op outside an active
 `over-50s-health:advisor` session — it has no effect on your other Claude Code sessions.
+
+## Long-term memory (Hindsight)
+
+The advisor can use [Hindsight](https://github.com/vectorize-io/hindsight) as an optional recall and reflection
+layer over your local history files. Hindsight must be self-hosted — it is **not** bundled in this plugin.
+
+### Prerequisites
+
+- A machine running Hindsight 0.10.3+ with an MCP endpoint
+- Ollama (or another LLM server) for the LLM provider
+- The `health` bank configured in Hindsight
+
+### Setup
+
+1. **Install Hindsight** on your host machine. See
+   [Hindsight docs](https://github.com/vectorize-io/hindsight) for installation instructions.
+
+2. **Configure the MCP server** in your Claude Code user scope:
+
+   ```bash
+   claude mcp add --scope user hindsight-health \
+     http://192.168.1.63:8888/mcp \
+     --env HINDSIGHT_API_KEY=your-api-key-here
+   ```
+
+   Replace the URL and API key with your actual values. The MCP server is restricted server-side to
+   `recall`, `reflect`, and `retain` tools only.
+
+3. **Enable retention** by setting the environment variable in your Claude Code session or in
+   `~/.claude/settings.json`:
+
+   ```json
+   {
+     "env": {
+       "HINDSIGHT_RETAIN_ENABLED": "true"
+     }
+   }
+   ```
+
+   The Stop hook (`hooks-handlers/retain-session.sh`) reads this variable and posts each session's
+   history file to Hindsight after the session ends. It fails silently if Hindsight is unreachable.
+
+4. **Backfill existing history** (one-time):
+
+   ```bash
+   ./scripts/backfill-history.sh
+   ```
+
+   This ingests all `history/` files, `CONTEXT_ARCHIVE.md`, `_legacy/` archives, and
+   `METRICS_LOG.csv` rows into the Hindsight `health` bank. Document IDs are derived from file paths,
+   so re-running is idempotent (409 conflict on duplicates).
+
+   Options:
+   - `--host HOST` — custom Hindsight host (default: 192.168.1.63)
+   - `--dry-run` — show what would be sent without posting
+   - `--skip-legacy` — skip `_legacy/` archives
+
+### How it works
+
+- **Session start**: the agent tries `mcp__hindsight-health__reflect` first. If Hindsight is
+  unavailable, it falls back to reading core files + the two most recent history entries.
+- **Retrieval**: when the Client mentions past topics, the agent calls `recall` first. If the MCP
+  call fails, it falls back to INDEX.md + Grep.
+- **Session end**: the Stop hook posts the session file to Hindsight. If unreachable, the file on
+  disk is untouched.
+
+**Files are always canonical.** Hindsight is a layer on top — if it is unavailable, the agent degrades
+to the plain-file behaviour with no data loss.
+
+### Known limitations
+
+- `reflect` on local models (e.g., `qwen3.8:27b` via Ollama) can produce confident factual errors.
+  Use it for orientation and synthesis, not for hard numbers — always verify figures against the files.
+- Recall quality: temporal queries are strong (8/8 in testing), entity queries are good but not perfect
+  (9/12 at top-5 in testing).
+- The spike results are documented in the
+  [sysadmin-studio repo](https://github.com/ali5ter/sysadmin-studio/blob/main/docs/hindsight-setup-record.md).
 
 ## Invoking the Agent
 
