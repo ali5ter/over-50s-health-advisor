@@ -82,7 +82,7 @@ post_documents() {
     -d "$payload" 2>/dev/null || echo "000")
 
   if [ "$http_code" = "200" ] || [ "$http_code" = "201" ] || [ "$http_code" = "409" ]; then
-    echo "  OK (HTTP $http_code)"
+    echo "  OK (HTTP $http_code)" >&2
     return 0
   else
     echo "  FAIL (HTTP $http_code)" >&2
@@ -101,78 +101,71 @@ ingest_by_date_header() {
   local tmpfile
   tmpfile=$(mktemp)
 
-  # Split file into sections by date headers, write to temp file
-  awk -v label="$label" '
+  # Split file into sections by date headers, write to temp file.
+  # Each section is prefixed with an "@@@DATE YYYY-MM-DD" marker so the reader
+  # can recover the date without re-parsing the header line.
+  awk '
     /^## [0-9]{4}-[0-9]{2}-[0-9]{2}/ {
-      if (NR > 1 && section != "") {
-        print "---SECTION_BOUNDARY---"
-      }
+      d = $0
+      sub(/^## /, "", d)
+      d = substr(d, 1, 10)
+      print "@@@DATE " d
+      started = 1
       print
-      section = $0
       next
     }
-    section != "" {
-      print
-    }
+    started { print }
   ' "$file" > "$tmpfile"
 
-  # Process sections from temp file
-  local current_section=""
+  # Process sections from temp file. Human-readable diagnostics (dry-run
+  # markers and post_documents OK/FAIL lines) go to stderr, so the only thing
+  # on stdout is the final "count errors" summary the caller captures.
+  local current_date=""
   local current_content=""
   local section_count=0
   local errors=0
+  local line doc_id payload
 
   while IFS= read -r line; do
-    if [ "$line" = "---SECTION_BOUNDARY---" ]; then
-      if [ -n "$current_section" ] && [ -n "$current_content" ]; then
-        section_count=$((section_count + 1))
-        local doc_date
-        doc_date=$(echo "$current_section" | grep -oP '\d{4}-\d{2}-\d{2}' | head -1 || true)
-        local section_short
-        section_short="${current_section:0:80}"
-        local doc_id
-        doc_id="${label}:${section_short}"
-
-        if [ "$DRY_RUN" = true ]; then
-          echo "  [DRY RUN] $doc_id (date: ${doc_date:-unknown})"
-        else
-          local payload
-          payload=$(jq -nc --arg id "$doc_id" --arg content "$current_content" \
-            --arg date "${doc_date:-unknown}" \
-            '{id: $id, content: $content, metadata: {date: $date}}')
-          if ! post_documents "$payload"; then
-            errors=$((errors + 1))
+    case "$line" in
+      "@@@DATE "*)
+        if [ -n "$current_date" ]; then
+          section_count=$((section_count + 1))
+          doc_id="${label}:${current_date}"
+          if [ "$DRY_RUN" = true ]; then
+            echo "  [DRY RUN] $doc_id" >&2
+          else
+            payload=$(jq -nc --arg id "$doc_id" --arg content "$current_content" \
+              --arg date "$current_date" \
+              '{id: $id, content: $content, metadata: {date: $date}}')
+            if ! post_documents "$payload"; then
+              errors=$((errors + 1))
+            fi
           fi
         fi
-      fi
-      current_section="$line"
-      current_content=""
-    else
-      if [ -n "$current_content" ]; then
-        current_content="${current_content}
+        current_date="${line#@@@DATE }"
+        current_content=""
+        ;;
+      *)
+        if [ -n "$current_content" ]; then
+          current_content="${current_content}
 ${line}"
-      else
-        current_content="$line"
-      fi
-    fi
+        else
+          current_content="$line"
+        fi
+        ;;
+    esac
   done < "$tmpfile"
 
   # Flush last section
-  if [ -n "$current_section" ] && [ -n "$current_content" ]; then
+  if [ -n "$current_date" ]; then
     section_count=$((section_count + 1))
-    local doc_date
-    doc_date=$(echo "$current_section" | grep -oP '\d{4}-\d{2}-\d{2}' | head -1 || true)
-    local section_short
-    section_short="${current_section:0:80}"
-    local doc_id
-    doc_id="${label}:${section_short}"
-
+    doc_id="${label}:${current_date}"
     if [ "$DRY_RUN" = true ]; then
-      echo "  [DRY RUN] $doc_id (date: ${doc_date:-unknown})"
+      echo "  [DRY RUN] $doc_id" >&2
     else
-      local payload
       payload=$(jq -nc --arg id "$doc_id" --arg content "$current_content" \
-        --arg date "${doc_date:-unknown}" \
+        --arg date "$current_date" \
         '{id: $id, content: $content, metadata: {date: $date}}')
       if ! post_documents "$payload"; then
         errors=$((errors + 1))
@@ -194,6 +187,10 @@ for year_dir in "$CONTEXT_DIR"/history/*/; do
 
   for session_file in "$year_dir"/*.md; do
     [ -f "$session_file" ] || continue
+    # Skip the master index — it is not a session, just lives in the year dir.
+    if [ "$(basename "$session_file")" = "INDEX.md" ]; then
+      continue
+    fi
     SESSION_COUNT=$((SESSION_COUNT + 1))
 
     # Extract date from frontmatter or filename
@@ -278,56 +275,31 @@ if [ -f "$METRICS_FILE" ]; then
     }
   ' "$METRICS_FILE" > "$tmpfile"
 
-  current_date=""
-  current_content=""
   metrics_count=0
   metrics_errors=0
 
+  # The awk emits a "---DATE---" marker before each "date: prose" line. Skip
+  # the marker and treat each "date: prose" line as one group, pulling the date
+  # from the part before the first colon.
   while IFS= read -r line; do
-    if [ "$line" = "---DATE---" ]; then
-      if [ -n "$current_date" ] && [ -n "$current_content" ]; then
-        metrics_count=$((metrics_count + 1))
-        doc_id="METRICS_LOG.csv:$current_date"
-
-        if [ "$DRY_RUN" = true ]; then
-          echo "  [DRY RUN] $doc_id (date: $current_date)"
-        else
-          payload=$(jq -nc --arg id "$doc_id" --arg content "$current_content" \
-            --arg date "$current_date" \
-            '{id: $id, content: $content, metadata: {date: $date}}')
-          if ! post_documents "$payload"; then
-            metrics_errors=$((metrics_errors + 1))
-          fi
-        fi
-      fi
-      current_date=""
-      current_content=""
-    else
-      if [ -n "$current_content" ]; then
-        current_content="${current_content}
-${line}"
-      else
-        current_content="$line"
-      fi
+    if [ "$line" = "---DATE---" ] || [ -z "$line" ]; then
+      continue
     fi
-  done < "$tmpfile"
-
-  # Flush last date
-  if [ -n "$current_date" ] && [ -n "$current_content" ]; then
-    metrics_count=$((metrics_count + 1))
+    current_date="${line%%:*}"
     doc_id="METRICS_LOG.csv:$current_date"
+    metrics_count=$((metrics_count + 1))
 
     if [ "$DRY_RUN" = true ]; then
-      echo "  [DRY RUN] $doc_id (date: $current_date)"
+      echo "  [DRY RUN] $doc_id" >&2
     else
-      payload=$(jq -nc --arg id "$doc_id" --arg content "$current_content" \
+      payload=$(jq -nc --arg id "$doc_id" --arg content "$line" \
         --arg date "$current_date" \
         '{id: $id, content: $content, metadata: {date: $date}}')
       if ! post_documents "$payload"; then
         metrics_errors=$((metrics_errors + 1))
       fi
     fi
-  fi
+  done < "$tmpfile"
 
   rm -f "$tmpfile"
   ERRORS=$((ERRORS + metrics_errors))
@@ -336,7 +308,11 @@ fi
 
 echo ""
 echo "=== Done ==="
-echo "  Total: $SESSION_COUNT session files + archives ingested"
+if [ "$DRY_RUN" = true ]; then
+  echo "  Total: $SESSION_COUNT session files + archives to ingest"
+else
+  echo "  Total: $SESSION_COUNT session files + archives ingested"
+fi
 if [ "$ERRORS" -gt 0 ]; then
   echo "  Errors: $ERRORS (check above for failed documents)"
   exit 1
