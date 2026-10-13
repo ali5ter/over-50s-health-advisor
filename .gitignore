@@ -6,6 +6,10 @@ context/user/
 *.swp
 *.swo
 
+# Python
+__pycache__/
+*.pyc
+
 # Logs
 *.log
 

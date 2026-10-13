@@ -30,6 +30,19 @@ if [ "$_agent_type" != "over-50s-health:advisor" ]; then
 fi
 
 # --- Configuration ---
+# The enable gate (and any host/URL overrides) come from a small config file the
+# hook sources itself, set the same way the api key is: a persistent file under
+# ~/.hindsight/, not an interactive-shell profile. This keeps the gate
+# independent of how Claude Code was launched (login shell, editor, CI) and
+# mirrors how hindsight-retain.py already reads HINDSIGHT_API_KEY from
+# ~/.hindsight/api_key rather than from process env. The path is overridable via
+# HINDSIGHT_CONFIG for testing or alternate locations.
+: "${HINDSIGHT_CONFIG:=$HOME/.hindsight/retain.env}"
+if [ -f "$HINDSIGHT_CONFIG" ]; then
+  # shellcheck disable=SC1090
+  source "$HINDSIGHT_CONFIG"
+fi
+
 : "${HINDSIGHT_RETAIN_ENABLED:=false}"
 if [ "$HINDSIGHT_RETAIN_ENABLED" != "true" ]; then
   exit 0

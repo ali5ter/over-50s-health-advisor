@@ -128,8 +128,10 @@ ${line}"
 # --- Per-session history ---
 echo "=== Per-session history ==="
 SESSION_COUNT=0
-for year_dir in "$CONTEXT_DIR"/history/*/; do
+for year_dir in "$CONTEXT_DIR"/history/*; do
   [ -d "$year_dir" ] || continue
+  # year_dir carries no trailing slash; the inner glob adds the single
+  # separator, so emitted ids read history/2026/2026-10-12.md (not //).
   for session_file in "$year_dir"/*.md; do
     [ -f "$session_file" ] || continue
     # Skip the master index — it lives in the year dir but is not a session.
