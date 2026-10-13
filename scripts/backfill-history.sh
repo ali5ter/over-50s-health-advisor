@@ -147,11 +147,20 @@ done
 echo "  $SESSION_COUNT session files"
 
 # --- CONTEXT_ARCHIVE.md ---
+# A single policy file (verbatim text cut from the core files during consolidation),
+# NOT a per-session archive. Its section dividers are "## Cut YYYY-MM-DD from <file>"
+# (all the same date) with verbatim "##" sub-headers inside each, so splitting by
+# date-header both misses them and would collide on the shared date. Ingest it as one
+# whole-file document instead; the date is taken from its first YYYY-MM-DD (the "Created"
+# line). The _legacy archives below stay split, since those use one "## YYYY-MM-DD" per
+# session.
 ARCHIVE_COUNT=0
 echo "=== CONTEXT_ARCHIVE.md ==="
 if [ -f "$CONTEXT_DIR/CONTEXT_ARCHIVE.md" ]; then
-  ARCHIVE_COUNT=$(emit_by_date_header "$CONTEXT_DIR/CONTEXT_ARCHIVE.md" "CONTEXT_ARCHIVE.md")
-  echo "  $ARCHIVE_COUNT sections"
+  ca_date=$(grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}' "$CONTEXT_DIR/CONTEXT_ARCHIVE.md" | head -1 || true)
+  emit "CONTEXT_ARCHIVE.md" "$(cat "$CONTEXT_DIR/CONTEXT_ARCHIVE.md")" "$ca_date" "archive"
+  ARCHIVE_COUNT=1
+  echo "  $ARCHIVE_COUNT section (whole-file document, date ${ca_date:-unknown})"
 fi
 
 # --- _legacy/ archives ---
