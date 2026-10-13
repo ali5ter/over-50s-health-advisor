@@ -46,8 +46,9 @@ hooks/
 hooks-handlers/
   sync-templates.sh                # Copies templates from plugin cache to ~/.claude/over-50s-health-advisor/templates/
   guard-bash-scope.sh              # Agent-scoped PreToolUse hook: scopes the advisor's Bash access
-  retain-session.sh                # Stop hook: persists session to Hindsight
+  retain-session.sh                # Stop hook: persists session to Hindsight via hindsight-retain.py
 scripts/
+  hindsight-retain.py              # MCP transport: retains documents into the health bank (idempotent manifest)
   backfill-history.sh              # One-off: ingest all history into Hindsight
 migrate                            # Migration script for v2.x users
 README.md
@@ -169,19 +170,16 @@ layer over your local history files. Hindsight must be self-hosted — it is **n
    Replace the URL and API key with your actual values. The MCP server is restricted server-side to
    `recall`, `reflect`, and `retain` tools only.
 
-3. **Enable retention** by setting the environment variable in your Claude Code session or in
-   `~/.claude/settings.json`:
+3. **Enable retention** by writing the enable gate to `~/.hindsight/retain.env` — the same
+   persistent-file pattern as the API key, set once and independent of how Claude Code is launched:
 
-   ```json
-   {
-     "env": {
-       "HINDSIGHT_RETAIN_ENABLED": "true"
-     }
-   }
+   ```bash
+   echo 'export HINDSIGHT_RETAIN_ENABLED=true' > ~/.hindsight/retain.env
    ```
 
-   The Stop hook (`hooks-handlers/retain-session.sh`) reads this variable and posts each session's
-   history file to Hindsight after the session ends. It fails silently if Hindsight is unreachable.
+   The Stop hook (`hooks-handlers/retain-session.sh`) sources that file and, when enabled, delegates
+   to `scripts/hindsight-retain.py`, which retains the session's history file into the `health` bank
+   over the MCP transport. It fails silently if Hindsight is unreachable.
 
 4. **Backfill existing history** (one-time):
 
@@ -190,12 +188,14 @@ layer over your local history files. Hindsight must be self-hosted — it is **n
    ```
 
    This ingests all `history/` files, `CONTEXT_ARCHIVE.md`, `_legacy/` archives, and
-   `METRICS_LOG.csv` rows into the Hindsight `health` bank. Document IDs are derived from file paths,
-   so re-running is idempotent (409 conflict on duplicates).
+   `METRICS_LOG.csv` rows into the Hindsight `health` bank. Retention runs over the MCP transport
+   (`scripts/hindsight-retain.py`) and keeps a local idempotency manifest at
+   `~/.hindsight/retain-manifest.json`; a first run seeds it from the bank, so re-runs skip what is
+   already present and add nothing new.
 
    Options:
    - `--host HOST` — custom Hindsight host (default: 192.168.1.63)
-   - `--dry-run` — show what would be sent without posting
+   - `--dry-run` — show what would be retained without sending
    - `--skip-legacy` — skip `_legacy/` archives
 
 ### How it works
@@ -204,8 +204,9 @@ layer over your local history files. Hindsight must be self-hosted — it is **n
   unavailable, it falls back to reading core files + the two most recent history entries.
 - **Retrieval**: when the Client mentions past topics, the agent calls `recall` first. If the MCP
   call fails, it falls back to INDEX.md + Grep.
-- **Session end**: the Stop hook posts the session file to Hindsight. If unreachable, the file on
-  disk is untouched.
+- **Session end**: the Stop hook delegates to `hindsight-retain.py`, which retains the session file
+  into the `health` bank over the MCP transport (skipping it if the manifest already has it). If
+  unreachable, the file on disk is untouched.
 
 **Files are always canonical.** Hindsight is a layer on top — if it is unavailable, the agent degrades
 to the plain-file behaviour with no data loss.
