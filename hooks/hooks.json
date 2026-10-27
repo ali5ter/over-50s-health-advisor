@@ -1,5 +1,5 @@
 {
-  "description": "Sync context file templates before each session, scope the advisor's Bash access, and persist session history to Hindsight on Stop. All hooks self-scope to agent_type == \"over-50s-health:advisor\" in bash (never in a prompt) and no-op for every other session, because Claude Code plugin hooks apply plugin-wide with no declarative per-agent matcher.",
+  "description": "Sync context file templates before each session, scope the advisor's Bash access, and persist session history to Hindsight on session end. All hooks self-scope to agent_type == \"over-50s-health:advisor\" in bash (never in a prompt) and no-op for every other session, because Claude Code plugin hooks apply plugin-wide with no declarative per-agent matcher. Retention and the staleness check register on both SubagentStop (the event a subagent advisor actually fires) and Stop (an explicit `claude --agent` main session); the retain is idempotent, so both firing is harmless.",
   "hooks": {
     "SessionStart": [
       {
@@ -22,12 +22,30 @@
         ]
       }
     ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks-handlers/retain-session.sh\""
+          },
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks-handlers/check-retain-staleness.sh\""
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks-handlers/retain-session.sh\""
+          },
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks-handlers/check-retain-staleness.sh\""
           }
         ]
       }

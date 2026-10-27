@@ -42,11 +42,12 @@ context/
 .claude-plugin/
   plugin.json                      # Plugin manifest
 hooks/
-  hooks.json                       # SessionStart + Stop hooks
+  hooks.json                       # SessionStart, PreToolUse, SubagentStop + Stop hooks
 hooks-handlers/
   sync-templates.sh                # Copies templates from plugin cache to ~/.claude/over-50s-health-advisor/templates/
   guard-bash-scope.sh              # Agent-scoped PreToolUse hook: scopes the advisor's Bash access
-  retain-session.sh                # Stop hook: persists session to Hindsight via hindsight-retain.py
+  retain-session.sh                # SubagentStop + Stop hook: persists session to Hindsight via hindsight-retain.py
+  check-retain-staleness.sh        # SubagentStop + Stop hook: warns when on-disk history is not yet retained
 scripts/
   hindsight-retain.py              # MCP transport: retains documents into the health bank (idempotent manifest)
   backfill-history.sh              # One-off: ingest all history into Hindsight
@@ -177,9 +178,11 @@ layer over your local history files. Hindsight must be self-hosted — it is **n
    echo 'export HINDSIGHT_RETAIN_ENABLED=true' > ~/.hindsight/retain.env
    ```
 
-   The Stop hook (`hooks-handlers/retain-session.sh`) sources that file and, when enabled, delegates
-   to `scripts/hindsight-retain.py`, which retains the session's history file into the `health` bank
-   over the MCP transport. It fails silently if Hindsight is unreachable.
+   The `SubagentStop`/`Stop` hook (`hooks-handlers/retain-session.sh`) sources that file and, when
+   enabled, delegates to `scripts/hindsight-retain.py`, which retains the session's history file into
+   the `health` bank over the MCP transport. It fails silently if Hindsight is unreachable. A sibling
+   hook, `check-retain-staleness.sh`, warns on session end when on-disk history has not yet been
+   retained (see **Checking staleness** below); it is offline and makes no network call.
 
 4. **Backfill existing history** (one-time):
 
@@ -200,21 +203,42 @@ layer over your local history files. Hindsight must be self-hosted — it is **n
 
 ### How it works
 
-- **Session start**: the agent tries `mcp__hindsight-health__reflect` first. If Hindsight is
-  unavailable, it falls back to reading core files + the two most recent history entries.
-- **Retrieval**: when the Client mentions past topics, the agent calls `recall` first. If the MCP
-  call fails, it falls back to INDEX.md + Grep.
-- **Session end**: the Stop hook delegates to `hindsight-retain.py`, which retains the session file
-  into the `health` bank over the MCP transport (skipping it if the manifest already has it). If
-  unreachable, the file on disk is untouched.
+- **Session start**: the agent orients with a **targeted `recall`** (small budget, recent window),
+  treating the result as a lead to cross-check against the core files — not an unbounded `reflect`,
+  which on local models can return confident but wrong facts. If Hindsight is unavailable, it falls
+  back to reading core files + the two most recent history entries.
+- **Retrieval**: when the Client mentions past topics, the agent calls `recall` first and notes what
+  it checked in a **History checked:** line. If the MCP call fails, it falls back to INDEX.md + Grep.
+- **Session end**: the `SubagentStop`/`Stop` hooks delegate to `hindsight-retain.py`, which retains the
+  session file into the `health` bank over the MCP transport (skipping it if the manifest already has
+  it). If unreachable, the file on disk is untouched. A sibling hook, `check-retain-staleness.sh`,
+  warns on end when on-disk history is not yet retained.
 
 **Files are always canonical.** Hindsight is a layer on top — if it is unavailable, the agent degrades
 to the plain-file behaviour with no data loss.
 
+### Checking staleness
+
+Because retention can miss sessions or metric groups (a session end that never fired, a backfill run
+before new sessions existed, a manifest not yet re-seeded), the `check-retain-staleness.sh` hook makes
+that gap observable: on every `SubagentStop`/`Stop` it compares the local manifest against the on-disk
+`history/` files and `METRICS_LOG.csv` and warns (on stderr, non-blocking) when anything is not yet
+retained. It is **offline** — it reads only the manifest and the local files, making no network call —
+so it is safe on every session end. Run it on demand for the full list:
+
+```bash
+./hooks-handlers/check-retain-staleness.sh --report
+```
+
+The fix for any reported gap is idempotent — re-run `./scripts/backfill-history.sh`, which skips what
+is already retained and adds only what is missing. The check runs only when `HINDSIGHT_RETAIN_ENABLED=true`.
+
 ### Known limitations
 
 - `reflect` on local models (e.g., `qwen3.8:27b` via Ollama) can produce confident factual errors.
-  Use it for orientation and synthesis, not for hard numbers — always verify figures against the files.
+  v5.1.0 mitigates this at session start by orienting with a **targeted `recall`** instead and treating
+  the result as a lead to cross-check against the files; reserve `reflect` for genuine cross-session
+  synthesis, and always verify figures against the files.
 - Recall quality: temporal queries are strong (8/8 in testing), entity queries are good but not perfect
   (9/12 at top-5 in testing).
 - The spike results are documented in the
