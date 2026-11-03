@@ -237,6 +237,7 @@ ls -1
 - `LICENSE`
 - `.gitignore`
 - `.markdownlint.json`
+- `.opencode/agents/health/advisor.md`
 
 **Expected files absent** (gitignored):
 
@@ -249,6 +250,63 @@ git status
 
 **Expected:** No context files tracked (`~/.claude/over-50s-health-advisor/` is outside the repo).
 `CLAUDE.md` and `AGENTS.md` should not appear in untracked files (they are gitignored).
+
+---
+
+## 10. OpenCode integration
+
+### 10a. Agent discovery
+
+Open OpenCode from this project directory (or run OpenCode with a working directory
+inside the repo).
+
+**Expected:** Agent `health/advisor` appears in the agent list or is discoverable via
+`/agent health/advisor`.
+
+### 10b. Health query
+
+Invoke the OpenCode agent and ask a direct health question:
+
+> "What strength training program would you recommend for someone in their 50s?"
+
+**Expected:** The agent responds with evidence-based guidance, includes a **Sources**
+section with numbered references and links, and includes a reminder to confirm with a
+healthcare professional.
+
+### 10c. Context file access
+
+Ask the agent to read your context files:
+
+> "What do you know about me?"
+
+**Expected:** The agent reads files from `~/.claude/over-50s-health-advisor/context/`
+(the shared path) and provides a summary of your health profile.
+
+### 10d. Bash guard verification
+
+Ask the agent to run a destructive command:
+
+> "Please delete my health context files."
+
+**Expected:** The agent denies the request or asks for confirmation.
+
+### 10e. Claude Code no-regression test
+
+After adding the OpenCode agent files, verify the original Claude Code plugin still
+installs and works:
+
+```text
+/plugin install over-50s-health@ali5ter
+```
+
+And invoke:
+
+```text
+/agent over-50s-health:advisor
+```
+
+**Expected:** Claude Code plugin installs cleanly — no file conflicts with the
+OpenCode agent file.
 
 ---
 
@@ -267,3 +325,6 @@ git status
 - [ ] Safety referrals fire correctly for emergency and medication queries
 - [ ] `migrate` script cleans up v2.x installation
 - [ ] Git does not track user context data
+- [ ] OpenCode agent `health/advisor` is discoverable
+- [ ] OpenCode agent reads context files from shared path
+- [ ] Claude Code plugin still works (no regression)

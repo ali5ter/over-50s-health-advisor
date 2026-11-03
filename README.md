@@ -1,8 +1,8 @@
 # Over-50s Health Advisor
 
-A Claude Code Agent definition for evidence-based, age-appropriate health, fitness, nutrition, and longevity guidance
-for adults 50+. The agent works with local context files only and always recommends confirming advice with a healthcare
-professional.
+A Claude Code and OpenCode Agent definition for evidence-based, age-appropriate health, fitness, nutrition, and
+longevity guidance for adults 50+. The agent works with local context files only and always recommends confirming
+advice with a healthcare professional.
 
 ## Features
 
@@ -16,7 +16,7 @@ professional.
   and reflection layer over your local history files
 - Safety boundaries and red-flag referral policy
 - Local context management via Markdown files
-- Install via Claude Code plugin system (`/plugin install over-50s-health@ali5ter`)
+- Install via Claude Code plugin system (`/plugin install over-50s-health@ali5ter`) or OpenCode (auto-discovered)
 - Automatic context file creation on first run
 
 ## Repository structure
@@ -26,7 +26,7 @@ system, the agent is managed by Claude Code and your personal context files are 
 
 ```text
 agents/
-  advisor.md                       # Agent definition (source)
+  advisor.md                       # Claude Code agent definition (source)
 context/
   templates/                       # Reference context templates
     INITIAL_USER_INFORMATION.md
@@ -48,6 +48,10 @@ hooks-handlers/
   guard-bash-scope.sh              # Agent-scoped PreToolUse hook: scopes the advisor's Bash access
   retain-session.sh                # SubagentStop + Stop hook: persists session to Hindsight via hindsight-retain.py
   check-retain-staleness.sh        # SubagentStop + Stop hook: warns when on-disk history is not yet retained
+.opencode/
+  agents/
+    health/
+      advisor.md                   # OpenCode agent definition (auto-discovered)
 scripts/
   hindsight-retain.py              # MCP transport: retains documents into the health bank (idempotent manifest)
   backfill-history.sh              # One-off: ingest all history into Hindsight
@@ -80,6 +84,8 @@ After installation, your personal context files are stored at:
 
 ## Install
 
+### Claude Code
+
 Inside Claude Code, run:
 
 ```text
@@ -90,7 +96,34 @@ Inside Claude Code, run:
 The first time you start a health conversation, the agent automatically creates your context files at
 `~/.claude/over-50s-health-advisor/context/`.
 
+### OpenCode
+
+The agent ships project-local and is auto-discovered when OpenCode is opened from this project (or globally from
+`~/.config/opencode/agents/`).
+
+**Project-local** (recommended — no setup required):
+
+1. Open OpenCode from this project directory (or any parent).
+2. The agent **`health/advisor`** appears automatically under `.opencode/agents/`.
+
+**Global install** (use from any project):
+
+```bash
+mkdir -p ~/.config/opencode/agents/health
+cp .opencode/agents/health/advisor.md ~/.config/opencode/agents/health/advisor.md
+```
+
+### Context path
+
+Both Claude Code and OpenCode share the same context files:
+
+```text
+~/.claude/over-50s-health-advisor/context/
+```
+
 ## Uninstall
+
+### Claude Code uninstall
 
 Inside Claude Code, run:
 
@@ -98,7 +131,17 @@ Inside Claude Code, run:
 /plugin uninstall over-50s-health@ali5ter
 ```
 
-This removes the plugin and agent. Your personal context files are **not** removed. To delete them:
+### OpenCode uninstall
+
+**Project-local**: nothing to remove — the agent lives in the project directory.
+
+**Global**:
+
+```bash
+rm ~/.config/opencode/agents/health/advisor.md
+```
+
+Your personal context files are **not** removed. To delete them:
 
 ```bash
 rm -rf ~/.claude/over-50s-health-advisor
@@ -112,8 +155,8 @@ If you previously installed via `./install.sh`, run the migration script from th
 ./migrate
 ```
 
-This removes the old manually-installed agent file. Your context files are preserved. Then install via the plugin
-commands above.
+This removes the old manually-installed agent file. Your context files are preserved. Then install via the appropriate
+platform commands above.
 
 ## Usage
 
@@ -125,7 +168,7 @@ first conversation.
 2. Keep `CLIENT_HEALTH_CONTEXT.md` and `SESSION_NOTES.md` current as new information is shared with the agent.
 3. Maintain `SOURCES.md` as a curated reference list (the agent will add sources; you can remove low-quality ones
    and add high-quality evidence).
-4. Use the agent from any directory in Claude Code. The agent will read and update these context files automatically.
+4. Use the agent from any directory in your chosen platform. The agent will read and update these context files automatically.
 5. Keep the "Last updated" dates accurate in each file.
 6. Ask for a "trend summary" or "how have I done this year" and the agent will read `METRICS_LOG.csv` — a
    structured, append-only record of every metric it has logged — instead of re-reading a year of session
@@ -162,50 +205,50 @@ layer over your local history files. Hindsight must be self-hosted — it is **n
 
 2. **Configure the MCP server** in your Claude Code user scope:
 
-   ```bash
-   claude mcp add --scope user hindsight-health \
-     http://192.168.1.63:8888/mcp \
-     --env HINDSIGHT_API_KEY=your-api-key-here
-   ```
+    ```bash
+    claude mcp add --scope user hindsight-health <command>
+    ```
 
-   Replace the URL and API key with your actual values. The MCP server is restricted server-side to
-   `recall`, `reflect`, and `retain` tools only.
+    Replace `<command>` with your actual Hindsight MCP server command. The MCP server is restricted server-side to
+    `recall`, `reflect`, and `retain` tools only.
 
 3. **Enable retention** by writing the enable gate to `~/.hindsight/retain.env` — the same
    persistent-file pattern as the API key, set once and independent of how Claude Code is launched:
 
-   ```bash
-   echo 'export HINDSIGHT_RETAIN_ENABLED=true' > ~/.hindsight/retain.env
-   ```
+    ```bash
+    echo 'export HINDSIGHT_RETAIN_ENABLED=true' > ~/.hindsight/retain.env
+    ```
 
-   The `SubagentStop`/`Stop` hook (`hooks-handlers/retain-session.sh`) sources that file and, when
-   enabled, delegates to `scripts/hindsight-retain.py`, which retains the session's history file into
-   the `health` bank over the MCP transport. It fails silently if Hindsight is unreachable. A sibling
-   hook, `check-retain-staleness.sh`, warns on session end when on-disk history has not yet been
-   retained (see **Checking staleness** below); it is offline and makes no network call.
+    The `SubagentStop`/`Stop` hook (`hooks-handlers/retain-session.sh`) sources that file and, when
+    enabled, delegates to `scripts/hindsight-retain.py`, which retains the session's history file into
+    the `health` bank over the MCP transport. It fails silently if Hindsight is unreachable. A sibling
+    hook, `check-retain-staleness.sh`, warns on session end when on-disk history has not yet been
+    retained (see **Checking staleness** below); it is offline and makes no network call.
 
 4. **Backfill existing history** (one-time):
 
-   ```bash
-   ./scripts/backfill-history.sh
-   ```
+    ```bash
+    ./scripts/backfill-history.sh
+    ```
 
-   This ingests all `history/` files, `CONTEXT_ARCHIVE.md`, `_legacy/` archives, and
-   `METRICS_LOG.csv` rows into the Hindsight `health` bank. Retention runs over the MCP transport
-   (`scripts/hindsight-retain.py`) and keeps a local idempotency manifest at
-   `~/.hindsight/retain-manifest.json`; a first run seeds it from the bank, so re-runs skip what is
-   already present and add nothing new.
+    This ingests all `history/` files, `CONTEXT_ARCHIVE.md`, `_legacy/` archives, and
+    `METRICS_LOG.csv` rows into the Hindsight `health` bank. Retention runs over the MCP transport
+    (`scripts/hindsight-retain.py`) and keeps a local idempotency manifest at
+    `~/.hindsight/retain-manifest.json`; a first run seeds it from the bank, so re-runs skip what is
+    already present and add nothing new.
 
-   Options:
-   - `--host HOST` — custom Hindsight host (default: 192.168.1.63)
-   - `--dry-run` — show what would be retained without sending
-   - `--skip-legacy` — skip `_legacy/` archives
+    Options:
+    - `--host HOST` — custom Hindsight host (default: 192.168.1.63)
+    - `--dry-run` — show what would be retained without sending
+    - `--skip-legacy` — skip `_legacy/` archives
 
 ### How it works
 
-- **Session start**: the agent orients with a **targeted `recall`** (small budget, recent window),
-  treating the result as a lead to cross-check against the core files — not an unbounded `reflect`,
-  which on local models can return confident but wrong facts. If Hindsight is unavailable, it falls
+- **Session start**: the agent orients with a **targeted `recall`** to the Hindsight MCP server, a
+  small budget, a recent temporal window — querying the Client's recent sessions to surface what is
+  unresolved. Do **not** use an unbounded `reflect` (the slow synthesis call), which can return confident
+  but wrong facts; reserve `reflect` for genuine cross-session reasoning. Treat any recall result as a
+  **lead, not a fact** — cross-check against the core files. If Hindsight is unavailable, the agent falls
   back to reading core files + the two most recent history entries.
 - **Retrieval**: when the Client mentions past topics, the agent calls `recall` first and notes what
   it checked in a **History checked:** line. If the MCP call fails, it falls back to INDEX.md + Grep.
@@ -216,6 +259,9 @@ layer over your local history files. Hindsight must be self-hosted — it is **n
 
 **Files are always canonical.** Hindsight is a layer on top — if it is unavailable, the agent degrades
 to the plain-file behaviour with no data loss.
+
+OpenCode uses the same Hindsight MCP tools (`mcp__hindsight-health__recall`, `mcp__hindsight-health__reflect`,
+`mcp__hindsight-health__retain`); configure the MCP server for your platform (e.g. `opencode mcp add hindsight-health`).
 
 ### Checking staleness
 
@@ -246,6 +292,8 @@ is already retained and adds only what is missing. The check runs only when `HIN
 
 ## Invoking the Agent
 
+### Invoking with Claude Code
+
 The health advisor agent is invoked automatically when you ask a health-related question in Claude Code. You can
 also target it directly using the `--agent` flag:
 
@@ -258,6 +306,16 @@ automatically; for anything else, the default assistant responds.
 
 Alternatively, just start Claude Code normally and ask a health question — the agent will activate based on your
 query.
+
+### Invoking with OpenCode
+
+Invoke from within an OpenCode session:
+
+```text
+/agent health/advisor
+```
+
+Or just ask a health question — the agent activates based on your query's topic.
 
 ## Starting a Conversation
 
