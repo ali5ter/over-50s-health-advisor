@@ -113,6 +113,19 @@ mkdir -p ~/.config/opencode/agents/health
 cp .opencode/agents/health/advisor.md ~/.config/opencode/agents/health/advisor.md
 ```
 
+### Invoke
+
+**From an OpenCode session:**
+
+- Just ask a health question — the agent activates automatically.
+- Or target it directly: `/agent health/advisor`
+
+**From Claude Code:**
+
+- Just ask a health question — the agent activates automatically.
+- Or target it directly: `claude --agent over-50s-health:advisor`
+- Or inside Claude Code: `/agent over-50s-health:advisor`
+
 ### Context path
 
 Both Claude Code and OpenCode share the same context files:
@@ -197,33 +210,42 @@ layer over your local history files. Hindsight must be self-hosted — it is **n
 - A machine running Hindsight 0.10.3+ with an MCP endpoint
 - Ollama (or another LLM server) for the LLM provider
 - The `health` bank configured in Hindsight
+- Hindsight MCP server configured (via **Configure the MCP server** below)
 
 ### Setup
 
 1. **Install Hindsight** on your host machine. See
    [Hindsight docs](https://github.com/vectorize-io/hindsight) for installation instructions.
 
-2. **Configure the MCP server** in your Claude Code user scope:
+2. **Configure the MCP server** for your platform:
 
-    ```bash
-    claude mcp add --scope user hindsight-health <command>
-    ```
+   **Claude Code** (user scope):
 
-    Replace `<command>` with your actual Hindsight MCP server command. The MCP server is restricted server-side to
-    `recall`, `reflect`, and `retain` tools only.
+   ```bash
+   claude mcp add --scope user hindsight-health <command>
+   ```
+
+   **OpenCode** (user scope):
+
+   ```bash
+   opencode mcp add --global hindsight-health <command>
+   ```
+
+   Replace `<command>` with your Hindsight MCP server command (e.g. the Ollama-based endpoint).
+   The MCP server is restricted server-side to `recall`, `reflect`, and `retain` tools only.
 
 3. **Enable retention** by writing the enable gate to `~/.hindsight/retain.env` — the same
    persistent-file pattern as the API key, set once and independent of how Claude Code is launched:
 
-    ```bash
-    echo 'export HINDSIGHT_RETAIN_ENABLED=true' > ~/.hindsight/retain.env
-    ```
+   ```bash
+   echo 'export HINDSIGHT_RETAIN_ENABLED=true' > ~/.hindsight/retain.env
+   ```
 
-    The `SubagentStop`/`Stop` hook (`hooks-handlers/retain-session.sh`) sources that file and, when
-    enabled, delegates to `scripts/hindsight-retain.py`, which retains the session's history file into
-    the `health` bank over the MCP transport. It fails silently if Hindsight is unreachable. A sibling
-    hook, `check-retain-staleness.sh`, warns on session end when on-disk history has not yet been
-    retained (see **Checking staleness** below); it is offline and makes no network call.
+   The `SubagentStop`/`Stop` hook (`hooks-handlers/retain-session.sh`) sources that file and, when
+   enabled, delegates to `scripts/hindsight-retain.py`, which retains the session's history file into
+   the `health` bank over the MCP transport. It fails silently if Hindsight is unreachable. A sibling
+   hook, `check-retain-staleness.sh`, warns on session end when on-disk history has not yet been
+   retained (see **Checking staleness** below); it is offline and makes no network call.
 
 4. **Backfill existing history** (one-time):
 
@@ -259,9 +281,6 @@ layer over your local history files. Hindsight must be self-hosted — it is **n
 
 **Files are always canonical.** Hindsight is a layer on top — if it is unavailable, the agent degrades
 to the plain-file behaviour with no data loss.
-
-OpenCode uses the same Hindsight MCP tools (`mcp__hindsight-health__recall`, `mcp__hindsight-health__reflect`,
-`mcp__hindsight-health__retain`); configure the MCP server for your platform (e.g. `opencode mcp add hindsight-health`).
 
 ### Checking staleness
 
