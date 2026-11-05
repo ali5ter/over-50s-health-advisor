@@ -89,12 +89,14 @@ Should list all 5 context files.
 
 ### 3a. Context preservation on reinstall
 
-Add test content to a context file, reinstall the plugin, and verify data is preserved.
+Add test content to a context file, reinstall the plugin, and verify data is preserved. The `/plugin install`
+line runs inside Claude Code; the `echo` and `grep` lines are shell.
 
 ```bash
-echo "Test data" >> ~/.claude/over-50s-health-advisor/context/INITIAL_USER_INFORMATION.md
+CTX=~/.claude/over-50s-health-advisor/context
+echo "Test data" >> "$CTX/INITIAL_USER_INFORMATION.md"
 /plugin install over-50s-health@ali5ter
-grep "Test data" ~/.claude/over-50s-health-advisor/context/INITIAL_USER_INFORMATION.md
+grep "Test data" "$CTX/INITIAL_USER_INFORMATION.md"
 ```
 
 **Expected:** Test data is still present — reinstall never touches context files.
@@ -163,7 +165,8 @@ With context files populated, start a session and share new information:
 **Verification:**
 
 ```bash
-grep -i "metformin" ~/.claude/over-50s-health-advisor/context/CLIENT_HEALTH_CONTEXT.md
+CTX=~/.claude/over-50s-health-advisor/context
+grep -i "metformin" "$CTX/CLIENT_HEALTH_CONTEXT.md"
 ```
 
 ---
@@ -237,7 +240,7 @@ ls -1
 - `LICENSE`
 - `.gitignore`
 - `.markdownlint.json`
-- `.opencode/agents/health/advisor.md`
+- `.opencode/agents/over-50s-health/advisor.md`
 
 **Expected files absent** (gitignored):
 
@@ -260,8 +263,10 @@ git status
 Open OpenCode from this project directory (or run OpenCode with a working directory
 inside the repo).
 
-**Expected:** Agent `health/advisor` appears in the agent list or is discoverable via
-`/agent health/advisor`.
+**Expected:** OpenCode discovers the agent id **`over-50s-health/advisor`** from
+`.opencode/agents/over-50s-health/advisor.md`. Select it in the TUI with **Shift+Tab** (or **Ctrl+X then A** to
+list), or run non-interactively with `opencode run --agent over-50s-health/advisor "..."`. The run prints a header
+(`> over-50s-health/advisor · qwen3.8:27b`) confirming the active agent and model.
 
 ### 10b. Health query
 
@@ -325,6 +330,6 @@ OpenCode agent file.
 - [ ] Safety referrals fire correctly for emergency and medication queries
 - [ ] `migrate` script cleans up v2.x installation
 - [ ] Git does not track user context data
-- [ ] OpenCode agent `health/advisor` is discoverable
+- [ ] OpenCode agent `over-50s-health/advisor` is auto-discovered and selectable (Shift+Tab / `opencode run --agent`)
 - [ ] OpenCode agent reads context files from shared path
 - [ ] Claude Code plugin still works (no regression)

@@ -1,8 +1,7 @@
 ---
-name: "over-50s-health:advisor"
-description: "Evidence-based health, fitness, nutrition, and longevity guidance for adults 50+."
+description: Evidence-based health, fitness, nutrition, and longevity guidance for adults 50+.
 mode: all
-model: qwen3.6:35b-a3b-coding
+model: ollama/qwen3.8:27b
 color: "#22c55e"
 steps: 40
 permissions:

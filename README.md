@@ -50,8 +50,8 @@ hooks-handlers/
   check-retain-staleness.sh        # SubagentStop + Stop hook: warns when on-disk history is not yet retained
 .opencode/
   agents/
-    health/
-      advisor.md                   # OpenCode agent definition (auto-discovered)
+    over-50s-health/
+      advisor.md                   # OpenCode agent definition (auto-discovered); id = over-50s-health/advisor
 scripts/
   hindsight-retain.py              # MCP transport: retains documents into the health bank (idempotent manifest)
   backfill-history.sh              # One-off: ingest all history into Hindsight
@@ -79,8 +79,14 @@ After installation, your personal context files are stored at:
 
 ## Requirements
 
-- Claude Code CLI v2.0.73 or later
-- Uses Claude Opus 4.6 by default for highest reasoning quality; override with `/model` if preferred
+One of the two harnesses below works — the agent is packaged for both, and you need only one:
+
+- **Claude Code:** the CLI, v2.0.73 or later. Uses Claude Opus 4.6 by default for highest reasoning quality;
+  override with `/model` if preferred.
+- **OpenCode:** the `opencode` CLI (<https://opencode.ai>), plus a reachable model endpoint. The agent pins
+  `model: ollama/qwen3.8:27b` by default. If that model is unavailable on your endpoint, override it with the
+  `--model provider/model` flag (e.g. `opencode run --model ollama/other-model …`) or by editing the agent's
+  `model:` frontmatter.
 
 ## Install
 
@@ -99,26 +105,38 @@ The first time you start a health conversation, the agent automatically creates 
 ### OpenCode
 
 The agent ships project-local and is auto-discovered when OpenCode is opened from this project (or globally from
-`~/.config/opencode/agents/`).
+`~/.config/opencode/agents/`). Its OpenCode agent id is **`over-50s-health/advisor`** — the nested directory name
+is part of the id.
 
 **Project-local** (recommended — no setup required):
 
 1. Open OpenCode from this project directory (or any parent).
-2. The agent **`health/advisor`** appears automatically under `.opencode/agents/`.
+2. OpenCode auto-discovers the agent from `.opencode/agents/over-50s-health/advisor.md`. Select it with
+   **Shift+Tab** (cycle agents) or **Ctrl+X then A** (list agents); the active agent and model are shown in the
+   session footer.
 
-**Global install** (use from any project):
+**Global install** (use from any project — run from the repo root):
 
 ```bash
-mkdir -p ~/.config/opencode/agents/health
-cp .opencode/agents/health/advisor.md ~/.config/opencode/agents/health/advisor.md
+DEST=~/.config/opencode/agents/over-50s-health
+mkdir -p "$DEST"
+cp .opencode/agents/over-50s-health/advisor.md "$DEST/advisor.md"
 ```
 
 ### Invoke
 
-**From an OpenCode session:**
+**From OpenCode:**
 
-- Just ask a health question — the agent activates automatically.
-- Or target it directly: `/agent health/advisor`
+- **Interactive TUI:** in a session, press **Shift+Tab** to cycle to **`over-50s-health/advisor`** (or **Ctrl+X
+  then A** to list all agents). The active agent and model are shown in the footer.
+- **Non-interactive** (the closest thing to `claude --agent …`):
+
+  ```bash
+  opencode run --agent over-50s-health/advisor "your health question"
+  ```
+
+  The agent pins `model: ollama/qwen3.8:27b`, so no `--model` flag is needed. The run prints a header like
+  `> over-50s-health/advisor · qwen3.8:27b`, so you always know which agent is active.
 
 **From Claude Code:**
 
@@ -151,7 +169,7 @@ Inside Claude Code, run:
 **Global**:
 
 ```bash
-rm ~/.config/opencode/agents/health/advisor.md
+rm ~/.config/opencode/agents/over-50s-health/advisor.md
 ```
 
 Your personal context files are **not** removed. To delete them:
@@ -328,13 +346,19 @@ query.
 
 ### Invoking with OpenCode
 
-Invoke from within an OpenCode session:
+OpenCode has no `/agent` slash command and does not auto-route health queries to the agent, so you select it
+explicitly:
 
-```text
-/agent health/advisor
-```
+- **Interactive TUI:** press **Shift+Tab** to cycle agents, or **Ctrl+X then A** to list them, and then pick
+  **`over-50s-health/advisor`**.
+- **Non-interactive:**
 
-Or just ask a health question — the agent activates based on your query's topic.
+  ```bash
+  opencode run --agent over-50s-health/advisor "your health question"
+  ```
+
+The agent pins `model: ollama/qwen3.8:27b`. The run prints a header (`> over-50s-health/advisor · qwen3.8:27b`) so
+you always know which agent is active.
 
 ## Starting a Conversation
 
